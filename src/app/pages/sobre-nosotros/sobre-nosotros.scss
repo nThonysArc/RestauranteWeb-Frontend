@@ -1,0 +1,221 @@
+.hero {
+  position: relative;
+  height: 60vh;
+  overflow: hidden;
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .texto-inicio {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translateY(-50%);
+    color: white;
+    max-width: 600px;
+
+    h2.subtitulo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p.descripcion {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+  }
+}
+
+/* 
+   Sección Historia
+*/
+.seccion-ica {
+  background-color: #fff;
+  color: #333;
+
+  .titulo-ica {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: rgb(151, 93, 17);
+  }
+
+  .descripcion-ica {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    line-height: 1.7;
+    margin-bottom: 1.4rem;
+  }
+
+  .img-ica {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+}
+
+/* 
+   Sección Misión, Visión y Valores
+*/
+.seccion-sobre-nosotros {
+  background-color: #FFF9F1;
+  font-family: 'Playfair Display', serif;
+
+  .titulo-ica {
+    font-weight: 700;
+    font-size: 3rem;
+    color: rgb(151, 93, 17);
+    margin-bottom: 3rem;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: 100%;            
+    display: flex;
+    flex-direction: column; 
+  }
+
+  .card-title {
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    color: rgb(151, 93, 17);
+  }
+
+  .card-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+
+  }
+
+  img.card-img-top {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+}
+
+
+
+/* 
+   Sección Características */
+.seccion-sobre-nosotros.diferenciadores {
+  background-color: #fff7ee;
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: bold;
+    font-size: 3rem;
+    color: rgb(151, 93, 17);
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+  }
+
+  .row.g-4 {
+    .card {
+      text-align: center;
+      padding: 1.5rem;
+
+      img.card-img-top {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem auto;
+      }
+
+      .card-title {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .card-text {
+        font-size: 0.95rem;
+        color: #333;
+      }
+    }
+  }
+
+  p.mt-5 {
+    font-size: 1.2rem;
+  }
+
+  .btn-naranja {
+    margin-top: 1rem;
+    padding: 10px 25px;
+    background-color: #f38b0b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #ffa94d;
+    }
+  }
+}
+
+/* 
+   Sección final de contacto */
+.seccion-ica.contacto {
+  .titulo-ica {
+    font-size: 2.7rem;
+    margin-bottom: 1rem;
+  }
+
+  .descripcion-ica {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .img-ica {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .btn-naranja {
+    padding: 10px 25px;
+    background-color: #f38b0b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #ffa94d;
+    }
+  }
+}
+.map-ica {
+  width: 100%;
+  height: 650px;   // aquí puedes cambiar sin miedo
+  border-radius: 10px;
+}

@@ -1,0 +1,47 @@
+/* ============================
+   🌍 Estilos Globales
+============================ */
+
+/* Importar tipografías */
+@import url('https://fonts.googleapis.com/css2?family=Clicker+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+/* Reset básico */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Playfair Display', serif;
+}
+
+/* Navbar */
+.navbar-brand,
+.navbar-nav .nav-link {
+  font-family: 'Clicker Script', cursive;
+}
+
+.nav-link {
+  font-size: 1.1rem;
+  margin: 0 10px;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Ajusta espacio debajo del header fijo */
+.content {
+  padding-top: 60px;
+}
+
+/* Botón naranja reutilizable */
+.btn-naranja {
+  background-color: #f38b0b; /* naranja fuerte */
+  color: white;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.btn-naranja:hover {
+  background-color: #ffa94d; /* más claro al hover */
+  color: white;
+}

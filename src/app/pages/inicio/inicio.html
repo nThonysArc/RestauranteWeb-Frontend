@@ -1,0 +1,288 @@
+<!--  Portada -->
+<section class="hero">
+    <img src="imagenes/portada.jpg" 
+       alt="Restaurante Raíz Iqueña" 
+       class="hero-img">
+
+  <div class="texto-inicio">
+
+    <h2 class="fw-bold subtitulo">Disfruta lo mejor de la comida</h2>
+
+  
+    <h1 class="titulo-criolla">Criolla</h1>
+
+    <p class="descripcion">
+      Nada mejor que el auténtico sabor de nuestra tierra en cada plato
+    </p>
+
+  
+    <p class="descripcion">
+      Descubre los aromas, sabores y tradición que nos representan
+    </p>
+
+   
+    <p class="descripcion">
+      Te ofrecemos lo mejor para que vivas una experiencia única
+    </p>
+
+
+<button class="btn btn-naranja btn-lg mt-3" [routerLink]="'/delivery'">
+  Haz tu pedido
+</button>
+  </div>
+</section>
+<!-- Sección: Descubre lo mejor de Ica -->
+<section class="seccion-ica py-5">
+  <div class="container">
+    <div class="row align-items-center">
+     
+      <div class="col-md-6">
+        <h2 class="titulo-ica">Descubre lo mejor de Ica</h2>
+        <p class="descripcion-ica">
+          Ica es tierra de tradición, cultura y sabor. En cada plato encontrarás
+          la esencia de nuestra región: ingredientes frescos, recetas heredadas
+          y el toque criollo que convierte cada comida en una experiencia para
+          recordar.
+        </p>
+       <button class="btn btn-naranja mt-3" [routerLink]="'/sobre-nosotros'">Ver más</button>
+      </div>
+
+  
+      <div class="col-md-6 text-center">
+        <img src="imagenes/ica descubre.JPG"
+             alt="Ica gastronomía" 
+             class="img-ica img-fluid">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección Menú -->
+<section class="seccion-menu py-5">
+  <div class="container text-center">
+   
+    <h2 class="titulo-menu mb-2">¡Disfruta de nuestros mejores platos!</h2>
+    <p class="subtitulo-menu mb-5">
+      Explora nuestros platillos, pídelos vía delivery o ven a nuestro local!
+    </p>
+
+   
+    <div class="row justify-content-center g-4">
+      
+      <div class="col-md-4">
+        <div class="card tarjeta-menu h-100">
+          <img src="imagenes/arroz con pollo.jpg" class="card-img-top" alt="Plato 1">
+          <div class="card-body">
+            <h5 class="card-title">Arroz con pollo</h5>
+            <p class="card-text">
+              Ingredientes: pollo, arroz, verduras y especias tradicionales<br>
+              Precio: S/ 25.00
+            </p>
+          </div>
+        </div>
+      </div>
+
+     
+      <div class="col-md-4">
+        <div class="card tarjeta-menu h-100">
+          <img src="imagenes/cau cau.jpg" class="card-img-top" alt="Plato 2">
+          <div class="card-body">
+            <h5 class="card-title">Cau Cau</h5>
+            <p class="card-text">
+              Ingredientes: mondongo, papa, hierbas y especias criollas<br>
+              Precio: S/ 28.00
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card tarjeta-menu h-100">
+          <img src="imagenes/Frejoles con seco.png" class="card-img-top" alt="Plato 3">
+          <div class="card-body">
+            <h5 class="card-title">Seco de res</h5>
+            <p class="card-text">
+              Ingredientes: carne de res, cerveza, cilantro y verduras<br>
+              Precio: S/ 30.00
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+<div class="text-center mt-4">
+  <a routerLink="menu" class="btn btn-naranja btn-lg">
+    Ver Menú Completo
+  </a>
+</div>
+
+  </div>
+  
+</section>
+<!-- Sección Sobre Nosotros -->
+<section class="seccion-sobre-nosotros py-5">
+  <div class="container text-center">
+   
+    <h2 class="mb-2" style="font-family: 'Playfair Display', serif; font-weight: bold; font-size: 3rem;  color: rgb(151, 93, 17);">
+      ¿Por qué somos diferentes?
+    </h2>
+
+    
+    <p class="mb-5" style="font-family: 'Playfair Display', serif; font-size: 1.1rem;">
+      Descubre las cualidades que hacen que Raíz Iqueña sea único
+    </p>
+
+  
+    <div class="row justify-content-center g-4 align-items-stretch">
+  
+      <div class="col-md-3 d-flex">
+        <div class="card p-3 w-100 text-center">
+          <img src="imagenes/cocinero.png" class="card-img-top mx-auto" style="width: 80px; height: 80px;" alt="Pasión del Chef">
+          <div class="card-body">
+            <h5 class="card-title">Pasión del Chef</h5>
+            <p class="card-text">Cuidamos cada detalle en la preparación de nuestros platos.</p>
+          </div>
+        </div>
+      </div>
+
+     
+      <div class="col-md-3 d-flex">
+        <div class="card p-3 w-100 text-center">
+          <img src="imagenes/badge 1.png" class="card-img-top mx-auto" style="width: 80px; height: 80px;" alt="Alta Calidad">
+          <div class="card-body">
+            <h5 class="card-title">Alta Calidad</h5>
+            <p class="card-text">Solo usamos ingredientes frescos y seleccionados.</p>
+          </div>
+        </div>
+      </div>
+
+     
+      <div class="col-md-3 d-flex">
+        <div class="card p-3 w-100 text-center">
+          <img src="imagenes/comer.png" class="card-img-top mx-auto" style="width: 80px; height: 80px;" alt="Sabor Auténtico">
+          <div class="card-body">
+            <h5 class="card-title">Sabor Auténtico</h5>
+            <p class="card-text">Cada plato refleja nuestra tradición criolla.</p>
+          </div>
+        </div>
+      </div>
+
+    
+      <div class="col-md-3 d-flex">
+        <div class="card p-3 w-100 text-center">
+          <img src="imagenes/best-price 1.png" class="card-img-top mx-auto" style="width: 80px; height: 80px;" alt="Precio Accesible">
+          <div class="card-body">
+            <h5 class="card-title">Precio Accesible</h5>
+            <p class="card-text">Disfruta la mejor comida sin gastar de más.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+    <p class="mt-5" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">
+      Ven y vive la experiencia única de nuestra gastronomía.
+    </p>
+
+    
+    <div class="text-center mt-3">
+      <a routerLink="sobre-nosotros" class="btn btn-naranja btn-lg">
+        Conócenos Más
+      </a>
+    </div>
+  </div>
+</section>
+<!-- Sección Delivery -->
+<section class="seccion-delivery py-5" style="background-color: #b35b0e; color: white;">
+  <div class="container">
+    <div class="row align-items-center">
+   
+      <div class="col-md-6">
+        <h2 class="mb-3 fw-bold" style="font-family: 'Playfair Display', serif;">
+          El auténtico sabor de la comida criolla
+        </h2>
+        <p class="mb-4 fs-5" style="font-family: 'Playfair Display', serif; font-style: italic;">
+          “Disfruta tus platos favoritos donde quieras, con nuestro servicio de delivery rápido y seguro.”
+        </p>
+        <a routerLink="delivery" class="btn btn-light btn-lg fw-bold">
+          Haz tu pedido
+        </a>
+
+        <div class="mt-4" style="width: 60px; height: 4px; background-color: #fff; border-radius: 2px;"></div>
+      </div>
+
+      
+      <div class="col-md-6 text-center mt-4 mt-md-0">
+        <img src="imagenes/cheff cocinando.png" alt="Delivery Raíz Iqueña" class="img-fluid rounded shadow">
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Sección Carrusel de Reseñas -->
+<section class="py-5 carrusel-section">
+  <div class="container text-center">
+
+    <h2 class="mb-3" style="font-family: 'Playfair Display', serif; font-weight: bold; font-size: 3rem; color: rgb(151, 93, 17);
+">
+      Nuestra retroalimentación de perfección
+    </h2>
+    
+    <p class="mb-5" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">
+      Nuestros clientes tienen cosas increíbles que decir sobre nosotros.
+    </p>
+
+   
+    <div id="carouselReviews" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        
+        <div class="carousel-item active">
+          <div class="card shadow mx-auto review-card">
+            <div class="card-body">
+              <p class="mb-3">
+                “La comida es espectacular, todo fresco y con sabor auténtico. ¡Volveré seguro!”
+              </p>
+              <small class="text-muted">- Juan Pérez</small>
+            </div>
+          </div>
+        </div>
+     
+        <div class="carousel-item">
+          <div class="card shadow mx-auto review-card">
+            <div class="card-body">
+              <p class="mb-3">
+                “Servicio rápido, atención amable y platos deliciosos. ¡100% recomendado!”
+              </p>
+              <small class="text-muted">- María López</small>
+            </div>
+          </div>
+        </div>
+   
+        <div class="carousel-item">
+          <div class="card shadow mx-auto review-card">
+            <div class="card-body">
+              <p class="mb-3">
+                “El auténtico sabor de Ica en cada bocado. Me encantó la experiencia.”
+              </p>
+              <small class="text-muted">- Carlos Ramírez</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselReviews" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselReviews" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+      
+    </div>
+  </div>
+
+  <div class="decorador-final">
+  <hr>
+  <p>Gracias por ser parte de nuestra historia ✨</p>
+</div>
+
+</section>

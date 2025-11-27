@@ -1,0 +1,81 @@
+<!-- Sección Portada -->
+<section class="hero position-relative text-white" style="height: 60vh; overflow: hidden;">
+  <img src="imagenes/portada.jpg" alt="Menú Raíz Iqueña" class="hero-img">
+  <div class="texto-inicio">
+    <h2 class="fw-bold subtitulo">Descubre los sabores auténticos de Ica</h2>
+    <p class="descripcion">Nuestra carta ofrece platos tradicionales criollos, preparados con pasión y los mejores ingredientes.</p>
+  </div>
+</section>
+
+<!-- Sección Entradas -->
+<section class="py-5 seccion-menu">
+  <div class="container">
+    <h2 class="titulo-menu text-center mb-4">Entradas</h2>
+    <div class="row g-4 justify-content-center">
+      <!-- Aquí usaré solo tarjetas porq son pocos -->
+      <div class="col-md-3">
+        <div class="card tarjeta-menu text-center">
+          <img src="imagenes/cazueladepollo.jpg" class="card-img-top" alt="Cazuela de Pollo">
+          <div class="card-body">
+            <h5 class="card-title">Cazuela de Pollo</h5>
+            <p class="card-text">Deliciosa sopa criolla con pollo, verduras y sazón tradicional.</p>
+            <p class="card-text fw-bold">S/ 5</p>
+            <a class="btn btn-naranja" [routerLink]="'/delivery'">Pedir Ahora</a>
+          </div>
+        </div>
+      </div>
+      <!-- Tarjeta  -->
+      <div class="col-md-3">
+        <div class="card tarjeta-menu text-center">
+          <img src="imagenes/mollejitasfritas.jpg" class="card-img-top" alt="Mollejitas Fritas">
+          <div class="card-body">
+            <h5 class="card-title">Mollejitas Fritas</h5>
+            <p class="card-text">Crujientes y doradas, acompañadas de salsa criolla.</p>
+            <p class="card-text fw-bold">S/ 7</p>
+            <a class="btn btn-naranja" [routerLink]="'/delivery'">Pedir Ahora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección Comidas Principales -->
+<section class="py-5 seccion-menu">
+  <div class="container">
+    <h2 class="titulo-menu text-center mb-4">Comidas Principales</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-3" *ngFor="let plato of comidasPrincipales">
+        <div class="card tarjeta-menu text-center">
+          <img [src]="plato.imagen" class="card-img-top" [alt]="plato.nombre">
+          <div class="card-body">
+            <h5 class="card-title">{{plato.nombre}}</h5>
+            <p class="card-text">{{plato.descripcion}}</p>
+            <p class="card-text fw-bold">S/ {{plato.precio}}</p>
+            <a class="btn btn-naranja" [routerLink]="'/delivery'">Pedir Ahora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección Platos a la Carta -->
+<section class="py-5 seccion-menu">
+  <div class="container">
+    <h2 class="titulo-menu text-center mb-4">Platos a la Carta</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-3" *ngFor="let plato of platosALaCarta">
+        <div class="card tarjeta-menu text-center">
+          <img [src]="plato.imagen" class="card-img-top" [alt]="plato.nombre">
+          <div class="card-body">
+            <h5 class="card-title">{{plato.nombre}}</h5>
+            <p class="card-text">{{plato.descripcion}}</p>
+            <p class="card-text fw-bold">S/ {{plato.precio}}</p>
+            <a class="btn btn-naranja" [routerLink]="'/delivery'">Pedir Ahora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

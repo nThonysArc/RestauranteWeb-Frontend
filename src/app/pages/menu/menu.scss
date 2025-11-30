@@ -1,4 +1,3 @@
-
 /* =========================================
    Contenedor Principal del Menú
    ========================================= */
@@ -18,14 +17,93 @@
 }
 
 /* =========================================
+   Barra de Filtros (Buscador + Categorías) - NUEVO
+   ========================================= */
+.filtros-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap; /* Se adapta a móviles */
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Estilo base para los inputs y selects */
+  .input-group {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 50px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    transition: box-shadow 0.3s ease;
+
+    &:hover, &:focus-within {
+      box-shadow: 0 4px 12px rgba(243, 139, 11, 0.15);
+      border-color: #f38b0b;
+    }
+  }
+
+  /* Buscador de texto */
+  .search-box {
+    flex: 2;
+    min-width: 250px;
+
+    .input-icon {
+      color: #f38b0b;
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+    }
+
+    input {
+      border: none;
+      box-shadow: none;
+      width: 100%;
+      outline: none;
+      font-size: 1rem;
+      font-family: 'Open Sans', sans-serif;
+      color: #555;
+    }
+  }
+
+  /* Selectores de Categoría y Tipo */
+  .category-box {
+    flex: 1;
+    min-width: 180px;
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f38b0b;
+      margin-right: 0.5rem;
+      white-space: nowrap;
+    }
+
+    select {
+      border: none;
+      box-shadow: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      color: #333;
+      background-color: transparent;
+      padding: 0;
+      outline: none;
+    }
+  }
+}
+
+/* =========================================
    Grid (Malla) de Productos
    ========================================= */
 .menu-grid {
   display: grid;
-  /* Esto crea columnas automáticas. 
-     Cada tarjeta tendrá mínimo 280px de ancho y máximo 1 fracción del espacio disponible.
-     Esto hace que sea responsive sin necesidad de media queries complejas.
-  */
+  /* Columnas automáticas responsive */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
   max-width: 1200px;
@@ -37,42 +115,41 @@
    ========================================= */
 .card-producto {
   background-color: #ffffff;
-  border-radius: 15px; /* Bordes redondeados elegantes */
+  border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden; /* Importante para que la imagen no se salga de las esquinas redondeadas */
+  overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
-  flex-direction: column; /* Organiza imagen y texto en columna */
-  height: 100%; /* Fuerza a que todas las tarjetas de una fila tengan la misma altura */
+  flex-direction: column;
+  height: 100%;
 
   &:hover {
-    transform: translateY(-5px); /* Efecto de elevación al pasar el mouse */
+    transform: translateY(-5px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
   }
 }
 
 /* =========================================
-   Contenedor de la Imagen (La clave del éxito)
+   Contenedor de la Imagen
    ========================================= */
 .imagen-container {
   width: 100%;
-  height: 220px; /* ALTO FIJO: Esto define el tamaño de la "ventana" de la foto */
+  height: 220px; /* Alto fijo para uniformidad */
   overflow: hidden;
   position: relative;
-  background-color: #f0f0f0; /* Color de fondo mientras carga */
+  background-color: #f0f0f0;
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* RECORTE INTELIGENTE: La imagen llena el espacio sin deformarse */
-    object-position: center; /* Centra la imagen */
+    object-fit: cover; /* Recorta sin deformar */
+    object-position: center;
     transition: transform 0.5s ease;
   }
 }
 
-/* Efecto Zoom suave en la imagen al hacer hover en la tarjeta */
 .card-producto:hover .imagen-container img {
-  transform: scale(1.08);
+  transform: scale(1.08); /* Zoom suave al hover */
 }
 
 /* =========================================
@@ -82,33 +159,42 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Ocupa todo el espacio restante en la tarjeta */
+  flex-grow: 1;
   text-align: left;
+
+  .header-info {
+    margin-bottom: 0.5rem;
+  }
 
   h3 {
     font-family: 'Playfair Display', serif;
     font-size: 1.3rem;
     font-weight: 700;
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
   }
 
-  .categoria {
-    font-size: 0.8rem;
+  /* Etiqueta de Categoría (Subcategoría) - NUEVO */
+  .badge-categoria {
+    background-color: #fff0d6;
+    color: #d67a0a;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #f38b0b;
-    font-weight: 600;
-    margin-bottom: 0.8rem;
+    letter-spacing: 0.5px;
+    display: inline-block;
   }
 
   .descripcion {
-    font-family: 'Open Sans', sans-serif; /* O la fuente base que uses */
+    font-family: 'Open Sans', sans-serif;
     font-size: 0.95rem;
     color: #666;
     line-height: 1.5;
+    margin-top: 0.8rem;
     margin-bottom: 1.5rem;
-    flex-grow: 1; /* Empuja el footer hacia abajo si el texto es corto */
+    flex-grow: 1;
   }
 }
 
@@ -119,7 +205,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* Garantiza que siempre esté al final de la tarjeta */
+  margin-top: auto;
   border-top: 1px solid #eee;
   padding-top: 1rem;
 
@@ -139,6 +225,9 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 6px rgba(243, 139, 11, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 
     &:hover {
       background-color: #ffa94d;
@@ -147,10 +236,27 @@
   }
 }
 
-/* Mensajes de estado (Carga o Vacío) */
-.loading, .no-data {
+/* =========================================
+   Estados (Carga y Vacío)
+   ========================================= */
+.loading {
   text-align: center;
   padding: 3rem;
   font-size: 1.2rem;
   color: #777;
+  
+  .spinner-border {
+    margin-bottom: 1rem;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #888;
+  font-size: 1.1rem;
+  
+  p {
+    margin-top: 1rem;
+  }
 }

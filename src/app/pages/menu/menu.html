@@ -13,13 +13,27 @@
     </div>
 
     <div class="input-group category-box">
+      <label class="filter-label">Categoría:</label>
       <select 
         class="form-select" 
-        [(ngModel)]="idCategoriaSeleccionada"
-        (change)="aplicarFiltros()">
-        <option [ngValue]="-1">Todas las categorías</option>
+        [(ngModel)]="idCategoriaPadreSeleccionada"
+        (change)="onCategoriaPadreChange()">
+        <option [ngValue]="-1">Todas</option>
         <option *ngFor="let cat of categoriasPrincipales" [ngValue]="cat.idCategoria">
           {{ cat.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div class="input-group category-box" *ngIf="subcategoriasDisponibles.length > 0">
+      <label class="filter-label">Tipo:</label>
+      <select 
+        class="form-select" 
+        [(ngModel)]="idSubcategoriaSeleccionada"
+        (change)="aplicarFiltros()">
+        <option [ngValue]="-1">Todos</option>
+        <option *ngFor="let sub of subcategoriasDisponibles" [ngValue]="sub.idCategoria">
+          {{ sub.nombre }}
         </option>
       </select>
     </div>
@@ -27,11 +41,11 @@
 
   <div *ngIf="cargando" class="loading">
       <div class="spinner-border text-warning" role="status"></div>
-      <p>Conectando con servidor local...</p>
+      <p>Cargando carta...</p>
   </div>
 
   <div *ngIf="errorCarga" class="no-data text-danger">
-    <p>❌ No se pudo conectar con http://localhost:8080. Asegúrate de que el backend esté corriendo.</p>
+    <p>❌ Error de conexión con el servidor local.</p>
   </div>
 
   <div class="menu-grid" *ngIf="!cargando && productosFiltrados.length > 0">

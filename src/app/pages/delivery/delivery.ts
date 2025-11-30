@@ -20,7 +20,7 @@ export class Delivery {
   };
 
   
- private backendUrl =  'https://carpeta-backend-production.up.railway.app/api/delivery';
+ private backendUrl = 'http://localhost:8080/api/web/pedidos';
 
 
   constructor(private http: HttpClient) {}

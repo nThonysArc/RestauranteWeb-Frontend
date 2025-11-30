@@ -14,22 +14,25 @@ import { ProductoService, Producto, Categoria } from '../../services/producto.se
 export class Menu implements OnInit {
   private productoService = inject(ProductoService);
   
-  // "Base de datos" en memoria del navegador
+  // Datos crudos
   todosLosProductos: Producto[] = [];
   todasLasCategorias: Categoria[] = [];
 
-  // Lo que ve el usuario
-  productosFiltrados: Producto[] = [];
-  categoriasPrincipales: Categoria[] = []; 
+  // Listas para los Selects
+  categoriasPrincipales: Categoria[] = [];   // Nivel 1 (ej: Entradas)
+  subcategoriasDisponibles: Categoria[] = []; // Nivel 2 (ej: Entradas Frías)
 
-  // Filtros
+  // Datos mostrados
+  productosFiltrados: Producto[] = [];
+
+  // Filtros seleccionados
   textoBusqueda: string = '';
-  idCategoriaSeleccionada: number = -1; // -1 = Todas
+  idCategoriaPadreSeleccionada: number = -1; // -1 = Todas las principales
+  idSubcategoriaSeleccionada: number = -1;   // -1 = Todas las subcategorías
 
   cargando: boolean = true; 
   errorCarga: boolean = false;
   
-  // URL base para imágenes (Local)
   private backendUrl = 'http://localhost:8080';
 
   ngOnInit(): void {
@@ -39,7 +42,6 @@ export class Menu implements OnInit {
   cargarDatos() {
     this.cargando = true;
     
-    // Carga paralela de Productos y Categorías
     forkJoin({
       productos: this.productoService.obtenerProductos(),
       categorias: this.productoService.obtenerCategorias()
@@ -48,46 +50,66 @@ export class Menu implements OnInit {
         this.todosLosProductos = res.productos;
         this.todasLasCategorias = res.categorias;
         
-        // 1. Filtramos solo las categorías PADRE (las que no tienen idCategoriaPadre)
-        // Esto llena el Select con "Entradas", "Fondos", etc.
+        // 1. Llenar el primer combo solo con Categorías PADRE (sin idCategoriaPadre)
         this.categoriasPrincipales = this.todasLasCategorias
           .filter(c => !c.idCategoriaPadre)
           .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-        // 2. Mostramos todo al inicio
+        // 2. Mostrar todo inicialmente
         this.productosFiltrados = this.todosLosProductos;
-        
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error conectando a localhost:', err);
+        console.error('Error:', err);
         this.errorCarga = true;
         this.cargando = false;
       }
     });
   }
 
+  // Se ejecuta cuando el usuario cambia la Categoría Principal
+  onCategoriaPadreChange() {
+    // 1. Resetear la subcategoría siempre que cambie el padre
+    this.idSubcategoriaSeleccionada = -1;
+
+    // 2. Filtrar las subcategorías que pertenecen a este padre
+    if (this.idCategoriaPadreSeleccionada !== -1) {
+      this.subcategoriasDisponibles = this.todasLasCategorias
+        .filter(c => c.idCategoriaPadre === this.idCategoriaPadreSeleccionada)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
+    } else {
+      this.subcategoriasDisponibles = [];
+    }
+
+    // 3. Aplicar filtro a los productos
+    this.aplicarFiltros();
+  }
+
   aplicarFiltros() {
     const texto = this.textoBusqueda.toLowerCase();
     
     this.productosFiltrados = this.todosLosProductos.filter(producto => {
-      // --- A. FILTRO POR TEXTO ---
+      // --- FILTRO DE TEXTO ---
       const coincideTexto = producto.nombre.toLowerCase().includes(texto) || 
                             (producto.descripcion && producto.descripcion.toLowerCase().includes(texto));
 
-      // --- B. FILTRO POR CATEGORÍA (Lógica de Escritorio) ---
+      // --- FILTRO DE CATEGORÍA ---
       let coincideCategoria = true;
-      
-      if (this.idCategoriaSeleccionada !== -1) {
-        // Opción 1: El producto pertenece DIRECTAMENTE a la categoría seleccionada (ej: Bebidas -> Inka Cola)
-        const esDirecta = producto.idCategoria === this.idCategoriaSeleccionada;
-        
-        // Opción 2: El producto pertenece a una SUBCATEGORÍA de la seleccionada (ej: Entradas -> Entradas Frías -> Causa)
-        // Buscamos la categoría del producto en la lista completa
-        const catDelProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
-        // Verificamos si su padre es la categoría seleccionada en el filtro
-        const esHija = catDelProducto && catDelProducto.idCategoriaPadre === this.idCategoriaSeleccionada;
 
+      // Caso A: Se seleccionó una Subcategoría específica
+      if (this.idSubcategoriaSeleccionada !== -1) {
+        coincideCategoria = producto.idCategoria === this.idSubcategoriaSeleccionada;
+      } 
+      // Caso B: Solo se seleccionó Categoría Principal (Traer todo lo de adentro)
+      else if (this.idCategoriaPadreSeleccionada !== -1) {
+        // El producto es válido si:
+        // 1. Su categoría directa es la seleccionada (ej: es un producto asignado directo al padre)
+        // 2. O su categoría directa es hija de la seleccionada
+        const catProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
+        
+        const esDirecta = producto.idCategoria === this.idCategoriaPadreSeleccionada;
+        const esHija = catProducto && catProducto.idCategoriaPadre === this.idCategoriaPadreSeleccionada;
+        
         coincideCategoria = esDirecta || Boolean(esHija);
       }
 
@@ -98,12 +120,10 @@ export class Menu implements OnInit {
   getImagenUrl(ruta: string | null): string {
     if (!ruta) return 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
     if (ruta.startsWith('http')) return ruta;
-    // Concatena http://localhost:8080 + /api/media/123...
     return `${this.backendUrl}${ruta}`; 
   }
 
   agregarAlCarrito(producto: Producto) {
-    // Aquí iría tu lógica de carrito real
     alert(`¡${producto.nombre} agregado al carrito!`);
   }
 }

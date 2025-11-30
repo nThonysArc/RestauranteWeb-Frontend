@@ -6,7 +6,9 @@ import { Observable } from 'rxjs';
 export interface Categoria {
   idCategoria: number;
   nombre: string;
-  idCategoriaPadre?: number; // Puede ser null si es una categoría principal
+  idCategoriaPadre?: number | null; // Importante: Puede ser null
+  // Propiedad opcional para saber si tiene hijos en el frontend
+  tieneHijos?: boolean; 
 }
 
 // Interfaz para los productos
@@ -26,7 +28,7 @@ export interface Producto {
 export class ProductoService {
   private http = inject(HttpClient);
   
-  // URL LOCAL solicitada
+  // Apuntando a tu backend local como pediste
   private apiUrl = 'http://localhost:8080/api'; 
 
   obtenerProductos(): Observable<Producto[]> {

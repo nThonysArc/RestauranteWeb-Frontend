@@ -15,6 +15,9 @@ export class Menu implements OnInit {
   
   // Variable para almacenar los productos del backend
   productos: Producto[] = [];
+
+  // Variable de estado para controlar la carga (Solución al "Cargando..." infinito)
+  cargando: boolean = true; 
   
   // URL base del backend (Railway) para concatenar a las imágenes relativas
   private backendUrl = 'https://carpeta-backend-production.up.railway.app';
@@ -24,14 +27,18 @@ export class Menu implements OnInit {
   }
 
   cargarProductos() {
+    // Iniciamos la carga
+    this.cargando = true;
+
     this.productoService.obtenerProductos().subscribe({
       next: (data) => {
         this.productos = data;
+        this.cargando = false; // Terminó la carga con éxito
         console.log('Productos cargados desde Backend:', this.productos);
       },
       error: (err) => {
         console.error('Error al conectar con el backend:', err);
-        // Aquí podrías mostrar un mensaje de error visual al usuario
+        this.cargando = false; // Terminó la carga (con error), dejamos de mostrar el spinner
       }
     });
   }

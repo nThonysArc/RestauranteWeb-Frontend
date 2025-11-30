@@ -1,35 +1,29 @@
 <section class="menu-container">
   <h2>Nuestra Carta</h2>
 
-  <div class="menu-grid" *ngIf="productos.length > 0; else noData">
-    
-    <div class="card-producto" *ngFor="let producto of productos">
-      
-      <div class="imagen-container">
-        <img [src]="getImagenUrl(producto.imagenUrl)" [alt]="producto.nombre">
-      </div>
-
-      <div class="info-producto">
-        <h3>{{ producto.nombre }}</h3>
-        <p class="categoria">{{ producto.categoriaNombre }}</p>
-        <p class="descripcion">{{ producto.descripcion }}</p>
-        
-        <div class="footer-card">
-          <span class="precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
-          <button class="btn-agregar" (click)="agregarAlCarrito(producto)">
-            Agregar
-          </button>
-        </div>
-      </div>
-
-    </div>
-
+  <div *ngIf="cargando" class="loading">
+      <p>Cargando deliciosos platos...</p>
   </div>
 
-  <ng-template #noData>
-    <div class="loading">
-      <p>Cargando deliciosos platos... (o revisa si el Backend está encendido)</p>
+  <div class="menu-grid" *ngIf="!cargando && productos.length > 0">
+    <div class="card-producto" *ngFor="let producto of productos">
+        <div class="imagen-container">
+            <img [src]="getImagenUrl(producto.imagenUrl)" [alt]="producto.nombre">
+        </div>
+        <div class="info-producto">
+            <h3>{{ producto.nombre }}</h3>
+            <p class="categoria">{{ producto.categoriaNombre }}</p>
+            <p class="descripcion">{{ producto.descripcion }}</p>
+            <div class="footer-card">
+            <span class="precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
+            <button class="btn-agregar" (click)="agregarAlCarrito(producto)">Agregar</button>
+            </div>
+        </div>
     </div>
-  </ng-template>
+  </div>
+
+  <div *ngIf="!cargando && productos.length === 0" class="no-data">
+      <p>No se encontraron platos disponibles en este momento.</p>
+  </div>
 
 </section>

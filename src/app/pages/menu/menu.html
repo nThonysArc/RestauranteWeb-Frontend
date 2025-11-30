@@ -1,29 +1,61 @@
 <section class="menu-container">
   <h2>Nuestra Carta</h2>
 
-  <div *ngIf="cargando" class="loading">
-      <p>Cargando deliciosos platos...</p>
+  <div class="filtros-container">
+    <div class="input-group search-box">
+      <span class="input-icon"><i class="bi bi-search"></i></span>
+      <input 
+        type="text" 
+        class="form-control" 
+        placeholder="Buscar plato..."
+        [(ngModel)]="textoBusqueda"
+        (input)="aplicarFiltros()">
+    </div>
+
+    <div class="input-group category-box">
+      <select 
+        class="form-select" 
+        [(ngModel)]="idCategoriaSeleccionada"
+        (change)="aplicarFiltros()">
+        <option [ngValue]="-1">Todas las categorías</option>
+        <option *ngFor="let cat of categoriasPrincipales" [ngValue]="cat.idCategoria">
+          {{ cat.nombre }}
+        </option>
+      </select>
+    </div>
   </div>
 
-  <div class="menu-grid" *ngIf="!cargando && productos.length > 0">
-    <div class="card-producto" *ngFor="let producto of productos">
+  <div *ngIf="cargando" class="loading">
+      <div class="spinner-border text-warning" role="status"></div>
+      <p>Conectando con servidor local...</p>
+  </div>
+
+  <div *ngIf="errorCarga" class="no-data text-danger">
+    <p>❌ No se pudo conectar con http://localhost:8080. Asegúrate de que el backend esté corriendo.</p>
+  </div>
+
+  <div class="menu-grid" *ngIf="!cargando && productosFiltrados.length > 0">
+    <div class="card-producto" *ngFor="let producto of productosFiltrados">
         <div class="imagen-container">
             <img [src]="getImagenUrl(producto.imagenUrl)" [alt]="producto.nombre">
         </div>
         <div class="info-producto">
-            <h3>{{ producto.nombre }}</h3>
-            <p class="categoria">{{ producto.categoriaNombre }}</p>
+            <div class="header-info">
+              <h3>{{ producto.nombre }}</h3>
+              <span class="badge-categoria">{{ producto.categoriaNombre }}</span>
+            </div>
             <p class="descripcion">{{ producto.descripcion }}</p>
             <div class="footer-card">
-            <span class="precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
-            <button class="btn-agregar" (click)="agregarAlCarrito(producto)">Agregar</button>
+              <span class="precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
+              <button class="btn-agregar" (click)="agregarAlCarrito(producto)">
+                Agregar
+              </button>
             </div>
         </div>
     </div>
   </div>
 
-  <div *ngIf="!cargando && productos.length === 0" class="no-data">
-      <p>No se encontraron platos disponibles en este momento.</p>
+  <div *ngIf="!cargando && !errorCarga && productosFiltrados.length === 0" class="no-data">
+      <p>No se encontraron platos con esos filtros.</p>
   </div>
-
 </section>

@@ -16,8 +16,8 @@ export class Menu implements OnInit {
   // Variable para almacenar los productos del backend
   productos: Producto[] = [];
   
-  // URL base del backend para concatenar a las imágenes relativas
-  private backendUrl = 'http://localhost:8080';
+  // URL base del backend (Railway) para concatenar a las imágenes relativas
+  private backendUrl = 'https://carpeta-backend-production.up.railway.app';
 
   ngOnInit(): void {
     this.cargarProductos();
@@ -39,23 +39,24 @@ export class Menu implements OnInit {
   /**
    * Procesa la URL de la imagen.
    * Si es null o vacía -> Pone una imagen por defecto.
-   * Si es una ruta relativa (ej: "/images/foto.jpg") -> Le pega el dominio del backend.
+   * Si es una ruta relativa (ej: "/api/media/1") -> Le pega el dominio del backend.
    * Si es una URL completa (http...) -> La deja tal cual.
    */
   getImagenUrl(ruta: string | null): string {
     if (!ruta) {
-      return 'assets/img/plato-default.png'; // Asegúrate de tener esta imagen o usa una URL pública
+      // Puedes poner una URL de imagen por defecto si no hay foto
+      return 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
     }
     if (ruta.startsWith('http')) {
       return ruta;
     }
-    // Asume que el backend sirve imágenes estáticas o desde un endpoint
-    // Si tu backend guarda la ruta como "/api/media/...", esto funcionará:
+    // Concatena el dominio de Railway con la ruta relativa que viene de la BD
     return `${this.backendUrl}${ruta}`; 
   }
 
   agregarAlCarrito(producto: Producto) {
     console.log('Agregando al carrito:', producto.nombre);
     // Aquí implementaremos la lógica del carrito más adelante
+    alert(`¡${producto.nombre} agregado al carrito!`);
   }
 }

@@ -17,7 +17,8 @@ export interface Producto {
 })
 export class ProductoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/productos'; // URL de tu backend
+  // CAMBIA localhost POR TU URL DE RAILWAY
+  private apiUrl = 'https://carpeta-backend-production.up.railway.app/api/productos'; 
 
   obtenerProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.apiUrl);

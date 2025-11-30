@@ -1,0 +1,32 @@
+<section class="login-container d-flex align-items-center justify-content-center">
+  <div class="card shadow p-4" style="max-width: 400px; width: 100%; border-radius: 15px;">
+    <div class="text-center mb-4">
+      <h2 class="titulo-login">Bienvenido</h2>
+      <p class="text-muted">Ingresa tus credenciales</p>
+    </div>
+
+    <form (ngSubmit)="login()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <input type="email" class="form-control" id="email" [(ngModel)]="credenciales.email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" [(ngModel)]="credenciales.password" name="password" required>
+      </div>
+
+      <div *ngIf="errorLogin" class="alert alert-danger text-center" role="alert">
+        {{ mensajeError }}
+      </div>
+
+      <button type="submit" class="btn btn-naranja w-100 py-2" [disabled]="cargando">
+        <span *ngIf="cargando" class="spinner-border spinner-border-sm me-2"></span>
+        Ingresar
+      </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <a routerLink="/menu" class="text-decoration-none text-muted">Volver al menú</a>
+    </div>
+  </div>
+</section>

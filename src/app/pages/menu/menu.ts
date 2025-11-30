@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // <-- 1. Importar Router
 import { forkJoin } from 'rxjs'; 
 import { ProductoService, Producto, Categoria } from '../../services/producto.service';
 
@@ -13,6 +14,7 @@ import { ProductoService, Producto, Categoria } from '../../services/producto.se
 })
 export class Menu implements OnInit {
   private productoService = inject(ProductoService);
+  private router = inject(Router); // <-- 2. Inyectar Router
   
   // Datos crudos
   todosLosProductos: Producto[] = [];
@@ -123,7 +125,24 @@ export class Menu implements OnInit {
     return `${this.backendUrl}${ruta}`; 
   }
 
+  // --- MODIFICACIÓN PRINCIPAL AQUÍ ---
   agregarAlCarrito(producto: Producto) {
+    // 1. Verificar si hay un token guardado (Usuario logueado)
+    const token = localStorage.getItem('token'); 
+
+    if (!token) {
+      // 2. Si NO hay token, preguntar si quiere ir al login
+      const deseaLogin = confirm("🔒 Para realizar un pedido necesitas iniciar sesión.\n\n¿Deseas ir a la página de inicio de sesión?");
+      
+      if (deseaLogin) {
+        // Redirigir a la ruta de login (asegúrate de tener esta ruta configurada en app.routes.ts)
+        // Puedes usar '/login' o '/auth/login' según tu configuración
+        this.router.navigate(['/login']); 
+      }
+      return; // Detener ejecución para no mostrar la alerta de "agregado"
+    }
+
+    // 3. Si SÍ hay token, procede (Aquí iría la lógica real de guardar en carrito)
     alert(`¡${producto.nombre} agregado al carrito!`);
   }
 }

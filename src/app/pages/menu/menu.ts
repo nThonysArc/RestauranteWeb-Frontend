@@ -1,31 +1,61 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common'; 
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Importante para *ngFor
+import { ProductoService, Producto } from '../../services/producto.service';
 
 @Component({
   selector: 'app-menu',
-  standalone: true, 
-  imports: [RouterModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule], 
   templateUrl: './menu.html',
-  styleUrls: ['./menu.scss']
+  styleUrl: './menu.scss'
 })
+export class MenuComponent implements OnInit {
+  // Inyección del servicio
+  private productoService = inject(ProductoService);
+  
+  // Variable para almacenar los productos del backend
+  productos: Producto[] = [];
+  
+  // URL base del backend para concatenar a las imágenes relativas
+  private backendUrl = 'http://localhost:8080';
 
-export class Menu {
-  comidasPrincipales = [
-    { nombre: 'Seco de Res', descripcion: 'Carne de res con salsa criolla y arroz.', precio: 15, imagen: 'imagenes/secoderes.jpg' },
-    { nombre: 'Cau Cau', descripcion: 'Guiso de mondongo con papas y especias.', precio: 13, imagen: 'imagenes/cau cau.jpg' },
-    { nombre: 'Arroz con Pollo', descripcion: 'Clásico arroz amarillo con pollo jugoso.', precio: 14, imagen: 'imagenes/arroz con pollo.jpg' },
-    { nombre: 'Frejoles', descripcion: 'Frejoles guisados acompañados de arroz.', precio: 12, imagen: 'imagenes/frejoles.jpg' },
-    { nombre: 'Pollada', descripcion: 'Pollo asado con especias criollas.', precio: 14, imagen: 'imagenes/pollada.jpg' },
-    { nombre: 'Chaufa con Broster', descripcion: 'Arroz chaufa con pollo broster y verduras.', precio: 15, imagen: 'imagenes/chaufaconbroaster.jpg' },
-    { nombre: 'Chicharrón de Pollo', descripcion: 'Crujientes trozos de pollo frito.', precio: 14, imagen: 'imagenes/chicharrondepollo.jpg' },
-    { nombre: 'Carapulcra', descripcion: 'Guiso de papa seca con carne y especias tradicionales.', precio: 16, imagen: 'imagenes/carapulcr.jpg' }
-  ];
+  ngOnInit(): void {
+    this.cargarProductos();
+  }
 
-  platosALaCarta = [
-    { nombre: 'Lomo Saltado de Pollo/Res', descripcion: 'Salteado con cebolla, tomate y papas fritas.', precio: 16, imagen: 'imagenes/lomosaltado.jpg' },
-    { nombre: 'Tallarin Saltado de Pollo/Res', descripcion: 'Tallarines salteados al estilo criollo.', precio: 17, imagen: 'imagenes/tallarin saltado.jpg' },
-    { nombre: 'Pollo al Cilindro', descripcion: 'Pollo al cilindro jugoso con papas doradas.', precio: 24, imagen: 'imagenes/polloalcilindro.jpg' },
-    { nombre: 'Chancho al Cilindro', descripcion: 'Chancho al cilindro con sabor único y jugoso.', precio: 28, imagen: 'imagenes/chanchoalcilindro.jpg' }
-  ];
+  cargarProductos() {
+    this.productoService.obtenerProductos().subscribe({
+      next: (data) => {
+        this.productos = data;
+        console.log('Productos cargados desde Backend:', this.productos);
+      },
+      error: (err) => {
+        console.error('Error al conectar con el backend:', err);
+        // Aquí podrías mostrar un mensaje de error visual al usuario
+      }
+    });
+  }
+
+  /**
+   * Procesa la URL de la imagen.
+   * Si es null o vacía -> Pone una imagen por defecto.
+   * Si es una ruta relativa (ej: "/images/foto.jpg") -> Le pega el dominio del backend.
+   * Si es una URL completa (http...) -> La deja tal cual.
+   */
+  getImagenUrl(ruta: string | null): string {
+    if (!ruta) {
+      return 'assets/img/plato-default.png'; // Asegúrate de tener esta imagen o usa una URL pública
+    }
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
+    // Asume que el backend sirve imágenes estáticas o desde un endpoint
+    // Si tu backend guarda la ruta como "/api/media/...", esto funcionará:
+    return `${this.backendUrl}${ruta}`; 
+  }
+
+  agregarAlCarrito(producto: Producto) {
+    console.log('Agregando al carrito:', producto.nombre);
+    // Aquí implementaremos la lógica del carrito más adelante
+  }
 }

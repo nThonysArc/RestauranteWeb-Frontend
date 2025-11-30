@@ -9,7 +9,7 @@ import { ProductoService, Producto } from '../../services/producto.service';
   templateUrl: './menu.html',
   styleUrl: './menu.scss'
 })
-export class MenuComponent implements OnInit {
+export class Menu implements OnInit {
   // Inyección del servicio
   private productoService = inject(ProductoService);
   

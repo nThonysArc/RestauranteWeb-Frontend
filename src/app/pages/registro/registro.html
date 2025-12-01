@@ -1,0 +1,72 @@
+<section class="registro-container py-5">
+  <div class="container d-flex justify-content-center">
+    <div class="card shadow p-4" style="max-width: 600px; width: 100%; border-radius: 15px; background-color: #FFF9F1;">
+      
+      <div class="text-center mb-4">
+        <h2 class="titulo-registro">Crea tu cuenta</h2>
+        <p class="text-muted">Para realizar tus pedidos de Delivery rápidamente</p>
+      </div>
+
+      <form (ngSubmit)="registrar()">
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Nombre *</label>
+            <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Apellidos</label>
+            <input type="text" class="form-control" [(ngModel)]="cliente.apellidos" name="apellidos">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Correo Electrónico *</label>
+          <input type="email" class="form-control" [(ngModel)]="cliente.email" name="email" required>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Contraseña *</label>
+            <input type="password" class="form-control" [(ngModel)]="cliente.password" name="password" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Edad</label>
+            <input type="number" class="form-control" [(ngModel)]="cliente.edad" name="edad">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Teléfono / Celular *</label>
+            <input type="text" class="form-control" [(ngModel)]="cliente.telefono" name="telefono" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Dirección de Entrega *</label>
+            <input type="text" class="form-control" [(ngModel)]="cliente.direccion" name="direccion" required placeholder="Calle, Av, Nro...">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Referencia de ubicación</label>
+          <textarea class="form-control" [(ngModel)]="cliente.referenciaDireccion" name="referencia" rows="2" placeholder="Ej: Casa color verde, frente al parque..."></textarea>
+        </div>
+
+        <div *ngIf="mensajeError" class="alert alert-danger text-center">
+          {{ mensajeError }}
+        </div>
+
+        <button type="submit" class="btn btn-naranja w-100 py-2 mt-2" [disabled]="cargando">
+          <span *ngIf="cargando" class="spinner-border spinner-border-sm me-2"></span>
+          Registrarse
+        </button>
+      </form>
+
+      <div class="text-center mt-3">
+        <span class="text-muted">¿Ya tienes cuenta? </span>
+        <a routerLink="/login" class="text-decoration-none fw-bold" style="color: #d67a0a;">Inicia Sesión aquí</a>
+      </div>
+
+    </div>
+  </div>
+</section>

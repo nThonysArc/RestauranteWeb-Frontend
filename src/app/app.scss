@@ -65,3 +65,114 @@ footer a:hover .bi {
   transform: translateY(-3px);
   color: #ffd39b; /* color de hover */
 }
+footer {
+  background-color: #6b310f; 
+  color: #fff;
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+  font-family: 'Playfair Display', serif;
+
+  h2 {
+    font-family: 'Clicker Script', cursive;
+    font-size: 2.5rem;
+    color: #fff3e6;
+  }
+
+  h5 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #ffd8b1; 
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    color: #f1f1f1;
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      color: #f5e6da;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #ffb347; 
+        cursor: pointer;
+      }
+    }
+  }
+
+  .text-center {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #ddd;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 1rem;
+  }
+
+  .row {
+    row-gap: 2rem;
+  }
+}
+footer a .bi {
+  vertical-align: middle;
+}
+
+footer .bi {
+  transition: transform .15s ease, color .15s ease;
+}
+
+footer a:hover .bi {
+  transform: translateY(-3px);
+  color: #ffd39b; /* color de hover */
+}
+
+/* ============================
+   Nuevos Estilos para Navbar
+   ============================ */
+.nav-link.active {
+  color: #f38b0b !important; /* Naranja activo */
+  font-weight: bold;
+}
+
+.avatar-circle {
+  width: 35px;
+  height: 35px;
+  background-color: #f38b0b;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  border: 2px solid white;
+}
+
+/* Ajustes para el Dropdown de usuario */
+.dropdown-menu {
+  border-radius: 10px;
+  overflow: hidden;
+  
+  .dropdown-item {
+    font-family: 'Playfair Display', serif;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: #fff7ee;
+      color: #d67a0a;
+    }
+    
+    &.text-danger:hover {
+      background-color: #ffebeb;
+      color: #dc3545;
+    }
+  }
+}

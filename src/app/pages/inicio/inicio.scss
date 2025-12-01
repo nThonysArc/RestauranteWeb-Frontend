@@ -207,4 +207,28 @@
       font-family: 'Playfair Display', serif;
     }
   }
+  /* Estilo base (para PC) */
+.titulo-criolla {
+  font-family: 'Clicker Script', cursive;
+  font-size: 16rem;
+  line-height: 1;
+}
+
+/* Ajuste para Tablets */
+@media (max-width: 992px) {
+  .titulo-criolla {
+    font-size: 10rem;
+  }
+}
+
+/* Ajuste para Celulares */
+@media (max-width: 576px) {
+  .titulo-criolla {
+    font-size: 5rem; /* Tamaño seguro para móviles */
+  }
+  
+  .titulo-menu {
+    font-size: 2rem; /* Ajustar también títulos de otras secciones si es necesario */
+  }
+}
 }

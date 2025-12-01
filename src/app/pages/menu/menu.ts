@@ -2,11 +2,12 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router'; 
+import { HttpClient } from '@angular/common/http'; // Necesario para enviar el pedido directo
 import { forkJoin } from 'rxjs'; 
 import { ProductoService, Producto, Categoria } from '../../services/producto.service';
-import { CarritoService } from '../../services/carrito.service'; 
+// Ya no usamos CarritoService para "acumular", el pedido es directo por plato (o puedes mantener la lógica de acumular si prefieres un modal de carrito flotante, pero simplifiquemos a pedido directo por ahora según tu indicación).
+// Si quieres mantener el carrito acumulativo sin vista, avísame. Asumiré pedido directo por ítem para simplificar la eliminación de la vista delivery.
 
-// Declaramos la variable bootstrap globalmente
 declare var bootstrap: any;
 
 @Component({
@@ -18,30 +19,29 @@ declare var bootstrap: any;
 })
 export class Menu implements OnInit {
   private productoService = inject(ProductoService);
-  private carritoService = inject(CarritoService); 
+  private http = inject(HttpClient);
   private router = inject(Router);
   
-  // Datos crudos
   todosLosProductos: Producto[] = [];
   todasLasCategorias: Categoria[] = [];
-
-  // Listas para los Selects
-  categoriasPrincipales: Categoria[] = [];   // Nivel 1
-  subcategoriasDisponibles: Categoria[] = []; // Nivel 2
-
-  // Datos mostrados
+  categoriasPrincipales: Categoria[] = [];
+  subcategoriasDisponibles: Categoria[] = [];
   productosFiltrados: Producto[] = [];
 
-  // Filtros seleccionados
   textoBusqueda: string = '';
-  idCategoriaPadreSeleccionada: number = -1; // -1 = Todas
-  idSubcategoriaSeleccionada: number = -1;   // -1 = Todas
+  idCategoriaPadreSeleccionada: number = -1;
+  idSubcategoriaSeleccionada: number = -1;
 
   cargando: boolean = true; 
   errorCarga: boolean = false;
   
   private backendUrl = 'http://localhost:8080';
   private loginModal: any; 
+  private confirmacionModal: any; // Modal para confirmar pedido
+
+  productoSeleccionado: Producto | null = null; // Para el modal de confirmación
+  cantidadSeleccionada: number = 1;
+  observaciones: string = '';
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -49,7 +49,6 @@ export class Menu implements OnInit {
 
   cargarDatos() {
     this.cargando = true;
-    
     forkJoin({
       productos: this.productoService.obtenerProductos(),
       categorias: this.productoService.obtenerCategorias()
@@ -57,13 +56,9 @@ export class Menu implements OnInit {
       next: (res) => {
         this.todosLosProductos = res.productos;
         this.todasLasCategorias = res.categorias;
-        
-        // 1. Llenar el primer combo solo con Categorías PADRE
         this.categoriasPrincipales = this.todasLasCategorias
           .filter(c => !c.idCategoriaPadre)
           .sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-        // 2. Mostrar todo inicialmente
         this.productosFiltrados = this.todosLosProductos;
         this.cargando = false;
       },
@@ -77,7 +72,6 @@ export class Menu implements OnInit {
 
   onCategoriaPadreChange() {
     this.idSubcategoriaSeleccionada = -1;
-
     if (this.idCategoriaPadreSeleccionada !== -1) {
       this.subcategoriasDisponibles = this.todasLasCategorias
         .filter(c => c.idCategoriaPadre === this.idCategoriaPadreSeleccionada)
@@ -85,29 +79,23 @@ export class Menu implements OnInit {
     } else {
       this.subcategoriasDisponibles = [];
     }
-
     this.aplicarFiltros();
   }
 
   aplicarFiltros() {
     const texto = this.textoBusqueda.toLowerCase();
-    
     this.productosFiltrados = this.todosLosProductos.filter(producto => {
       const coincideTexto = producto.nombre.toLowerCase().includes(texto) || 
                             (producto.descripcion && producto.descripcion.toLowerCase().includes(texto));
-
       let coincideCategoria = true;
-
       if (this.idSubcategoriaSeleccionada !== -1) {
         coincideCategoria = producto.idCategoria === this.idSubcategoriaSeleccionada;
-      } 
-      else if (this.idCategoriaPadreSeleccionada !== -1) {
+      } else if (this.idCategoriaPadreSeleccionada !== -1) {
         const catProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
         const esDirecta = producto.idCategoria === this.idCategoriaPadreSeleccionada;
         const esHija = catProducto && catProducto.idCategoriaPadre === this.idCategoriaPadreSeleccionada;
         coincideCategoria = esDirecta || Boolean(esHija);
       }
-
       return coincideTexto && coincideCategoria;
     });
   }
@@ -118,52 +106,99 @@ export class Menu implements OnInit {
     return `${this.backendUrl}${ruta}`; 
   }
 
-  agregarAlCarrito(producto: Producto) {
+  // --- LÓGICA DE PEDIDO ---
+
+  iniciarPedido(producto: Producto) {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      this.abrirLoginModal();
+      this.abrirModal('loginModal');
       return; 
     }
 
-    this.carritoService.agregarProducto(producto);
-    alert(`¡${producto.nombre} agregado al carrito!`);
+    // Si está logueado, abrimos modal de confirmación rápida
+    this.productoSeleccionado = producto;
+    this.cantidadSeleccionada = 1;
+    this.observaciones = '';
+    this.abrirModal('confirmacionModal');
   }
 
-  abrirLoginModal() {
-    const modalElement = document.getElementById('loginModal');
-    if (modalElement) {
-      this.loginModal = new bootstrap.Modal(modalElement);
-      this.loginModal.show();
+  confirmarPedido() {
+    if (!this.productoSeleccionado) return;
+
+    const usuarioData = JSON.parse(localStorage.getItem('usuario') || '{}');
+    // NOTA: Asumimos que al registrarse se guardaron dirección y teléfono.
+    // Si quisieras ser muy estricto, deberías validar que existan aquí o pedirlos en el modal.
+    
+    const pedidoDTO = {
+      idClienteWeb: usuarioData.id,
+      // Usamos valores por defecto o recuperados del perfil (si el backend tuviera endpoint de perfil)
+      // Por ahora, enviaremos un string genérico si no los tenemos a mano, 
+      // PERO lo ideal es que el Backend recupere la dirección del cliente por su ID.
+      // Como tu DTO pide dirección explicita:
+      direccionEntrega: "Dirección registrada en cuenta", 
+      telefonoContacto: "Teléfono registrado", 
+      referencia: this.observaciones, // Usamos observaciones como referencia o nota
+      metodoPago: "EFECTIVO", // Por defecto
+      detalles: [{
+        idProducto: this.productoSeleccionado.idProducto,
+        cantidad: this.cantidadSeleccionada,
+        observaciones: this.observaciones
+      }]
+    };
+
+    this.http.post('http://localhost:8080/api/web/pedidos', pedidoDTO)
+      .subscribe({
+        next: (res) => {
+          this.cerrarModal('confirmacionModal');
+          alert(`¡Pedido enviado! Estará listo pronto. \nPlato: ${this.productoSeleccionado?.nombre}`);
+          this.productoSeleccionado = null;
+        },
+        error: (err) => {
+          console.error('Error al pedir:', err);
+          if (err.status === 403) {
+            alert('Tu sesión expiró. Por favor inicia sesión de nuevo.');
+            this.irALogin();
+          } else {
+            alert('Hubo un error. Inténtalo más tarde.');
+          }
+        }
+      });
+  }
+
+  // --- GESTIÓN DE MODALES ---
+
+  abrirModal(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      const modal = new bootstrap.Modal(el);
+      if (id === 'loginModal') this.loginModal = modal;
+      if (id === 'confirmacionModal') this.confirmacionModal = modal;
+      modal.show();
     }
   }
 
-  // Método auxiliar para cerrar modal y limpiar backdrop
-  private cerrarModalYNavegar(ruta: string) {
-    if (this.loginModal) {
-      this.loginModal.hide();
-    } else {
-      const modalElement = document.getElementById('loginModal');
-      if (modalElement) {
-        const instance = bootstrap.Modal.getInstance(modalElement);
-        if (instance) instance.hide();
-      }
+  cerrarModal(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      const instance = bootstrap.Modal.getInstance(el);
+      if (instance) instance.hide();
     }
-
+    // Limpieza de backdrop
     const backdrops = document.querySelectorAll('.modal-backdrop');
     backdrops.forEach(backdrop => backdrop.remove());
     document.body.classList.remove('modal-open');
     document.body.style.removeProperty('padding-right');
     document.body.style.removeProperty('overflow');
-
-    this.router.navigate([ruta]);
   }
 
   irALogin() {
-    this.cerrarModalYNavegar('/login');
+    this.cerrarModal('loginModal');
+    this.router.navigate(['/login']);
   }
 
   irARegistro() {
-    this.cerrarModalYNavegar('/registro');
+    this.cerrarModal('loginModal');
+    this.router.navigate(['/registro']);
   }
 }

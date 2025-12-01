@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs'; 
 import { ProductoService, Producto, Categoria } from '../../services/producto.service';
 import { CarritoService } from '../../services/carrito.service';
+import { environment } from '../../environments/environment/environment'; //
 
 declare var bootstrap: any;
 
@@ -34,7 +35,8 @@ export class Menu implements OnInit {
   cargando: boolean = true; 
   errorCarga: boolean = false;
   
-  private backendUrl = 'http://localhost:8080';
+  // CORRECCIÓN: Usar la variable de entorno
+  private backendUrl = environment.apiUrl;
   private loginModal: any; 
 
   ngOnInit(): void {
@@ -97,6 +99,7 @@ export class Menu implements OnInit {
   getImagenUrl(ruta: string | null): string {
     if (!ruta) return 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
     if (ruta.startsWith('http')) return ruta;
+    // Construye la URL completa usando el backend de Railway
     return `${this.backendUrl}${ruta}`; 
   }
 

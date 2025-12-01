@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment/environment'; //
 
 @Component({
   selector: 'app-perfil',
@@ -26,8 +27,8 @@ export class PerfilComponent implements OnInit {
     }
     const user = JSON.parse(usuarioStr);
 
-    // Obtener datos actuales
-    this.http.get(`http://localhost:8080/api/web/cliente/${user.id}`).subscribe({
+    // Obtener datos actuales desde el backend en Railway
+    this.http.get(`${environment.apiUrl}/api/web/cliente/${user.id}`).subscribe({
       next: (res) => {
         this.cliente = res;
         this.cargando = false;
@@ -42,19 +43,19 @@ export class PerfilComponent implements OnInit {
   guardarCambios() {
     this.guardando = true;
     // Enviamos el objeto cliente tal cual al endpoint PUT
-    // Adaptamos campos si el backend espera nombres distintos, pero en ClienteWebService hicimos match
     const dto = {
         nombre: this.cliente.nombre,
         apellidos: this.cliente.apellidos,
         email: this.cliente.email,
         telefono: this.cliente.telefono,
-        direccion: this.cliente.direccionPrincipal, // Ojo con el nombre del campo en el DTO del backend
+        direccion: this.cliente.direccionPrincipal, 
         referenciaDireccion: this.cliente.referenciaDireccion,
         edad: this.cliente.edad,
         password: '' // No enviamos password si no se cambia
     };
 
-    this.http.put(`http://localhost:8080/api/web/cliente/${this.cliente.idClienteWeb}`, dto).subscribe({
+    // Actualizar datos en Railway
+    this.http.put(`${environment.apiUrl}/api/web/cliente/${this.cliente.idClienteWeb}`, dto).subscribe({
       next: (res) => {
         alert('Datos actualizados correctamente');
         this.guardando = false;

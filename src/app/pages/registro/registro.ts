@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment/environment'; //
 
 @Component({
   selector: 'app-registro',
@@ -45,8 +46,8 @@ export class Registro {
     this.cargando = true;
     this.mensajeError = '';
 
-    // URL de tu backend
-    const url = 'http://localhost:8080/api/web/auth/register';
+    // CORRECCIÓN: Usar la URL del environment
+    const url = `${environment.apiUrl}/api/web/auth/register`;
 
     this.http.post<any>(url, this.cliente).subscribe({
       next: (res) => {

@@ -1,81 +1,169 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Producto } from './producto.service';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; 
+import { forkJoin } from 'rxjs'; 
+import { ProductoService, Producto, Categoria } from '../../services/producto.service';
+// Corrección: Importar desde el archivo renombrado correctamente
+import { CarritoService } from '../../services/carrito.service'; 
 
-export interface ItemCarrito {
-  producto: Producto;
-  cantidad: number;
-  observaciones: string;
-  subtotal: number;
-}
+// Declaramos la variable bootstrap globalmente
+declare var bootstrap: any;
 
-@Injectable({
-  providedIn: 'root'
+@Component({
+  selector: 'app-menu',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './menu.html',
+  styleUrl: './menu.scss'
 })
-export class CarritoService {
-  // BehaviorSubject permite a los componentes suscribirse a los cambios en tiempo real
-  private itemsSubject = new BehaviorSubject<ItemCarrito[]>([]);
-  items$ = this.itemsSubject.asObservable();
+export class Menu implements OnInit {
+  private productoService = inject(ProductoService);
+  private carritoService = inject(CarritoService); 
+  private router = inject(Router);
+  
+  // Datos crudos
+  todosLosProductos: Producto[] = [];
+  todasLasCategorias: Categoria[] = [];
 
-  constructor() {
-    // Al iniciar, intentamos recuperar el carrito del localStorage para no perder datos si se recarga la página
-    const guardado = localStorage.getItem('carrito');
-    if (guardado) {
-      try {
-        this.itemsSubject.next(JSON.parse(guardado));
-      } catch (e) {
-        console.error('Error al cargar el carrito', e);
-        localStorage.removeItem('carrito');
-      }
-    }
+  // Listas para los Selects
+  categoriasPrincipales: Categoria[] = [];   // Nivel 1
+  subcategoriasDisponibles: Categoria[] = []; // Nivel 2
+
+  // Datos mostrados
+  productosFiltrados: Producto[] = [];
+
+  // Filtros seleccionados
+  textoBusqueda: string = '';
+  idCategoriaPadreSeleccionada: number = -1; // -1 = Todas
+  idSubcategoriaSeleccionada: number = -1;   // -1 = Todas
+
+  cargando: boolean = true; 
+  errorCarga: boolean = false;
+  
+  private backendUrl = 'http://localhost:8080';
+  private loginModal: any; 
+
+  ngOnInit(): void {
+    this.cargarDatos();
   }
 
-  agregarProducto(producto: Producto, cantidad: number = 1, observaciones: string = '') {
-    const itemsActuales = this.itemsSubject.value;
+  cargarDatos() {
+    this.cargando = true;
     
-    // Verificar si el producto ya existe en el carrito
-    const itemExistente = itemsActuales.find(item => item.producto.idProducto === producto.idProducto);
+    forkJoin({
+      productos: this.productoService.obtenerProductos(),
+      categorias: this.productoService.obtenerCategorias()
+    }).subscribe({
+      next: (res) => {
+        this.todosLosProductos = res.productos;
+        this.todasLasCategorias = res.categorias;
+        
+        // 1. Llenar el primer combo solo con Categorías PADRE
+        this.categoriasPrincipales = this.todasLasCategorias
+          .filter(c => !c.idCategoriaPadre)
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-    if (itemExistente) {
-      // Si existe, aumentamos la cantidad
-      itemExistente.cantidad += cantidad;
-      itemExistente.subtotal = itemExistente.cantidad * itemExistente.producto.precio;
-      // Opcional: concatenar observaciones si son diferentes
-      if (observaciones && !itemExistente.observaciones.includes(observaciones)) {
-        itemExistente.observaciones += `, ${observaciones}`;
+        // 2. Mostrar todo inicialmente
+        this.productosFiltrados = this.todosLosProductos;
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.errorCarga = true;
+        this.cargando = false;
       }
+    });
+  }
+
+  onCategoriaPadreChange() {
+    this.idSubcategoriaSeleccionada = -1;
+
+    if (this.idCategoriaPadreSeleccionada !== -1) {
+      this.subcategoriasDisponibles = this.todasLasCategorias
+        .filter(c => c.idCategoriaPadre === this.idCategoriaPadreSeleccionada)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
     } else {
-      // Si no existe, lo agregamos nuevo
-      itemsActuales.push({
-        producto: producto,
-        cantidad: cantidad,
-        observaciones: observaciones,
-        subtotal: cantidad * producto.precio
-      });
+      this.subcategoriasDisponibles = [];
     }
 
-    this.actualizarEstado(itemsActuales);
+    this.aplicarFiltros();
   }
 
-  eliminarProducto(idProducto: number) {
-    const itemsFiltrados = this.itemsSubject.value.filter(item => item.producto.idProducto !== idProducto);
-    this.actualizarEstado(itemsFiltrados);
+  aplicarFiltros() {
+    const texto = this.textoBusqueda.toLowerCase();
+    
+    this.productosFiltrados = this.todosLosProductos.filter(producto => {
+      // --- FILTRO DE TEXTO ---
+      const coincideTexto = producto.nombre.toLowerCase().includes(texto) || 
+                            (producto.descripcion && producto.descripcion.toLowerCase().includes(texto));
+
+      // --- FILTRO DE CATEGORÍA ---
+      let coincideCategoria = true;
+
+      // Caso A: Se seleccionó una Subcategoría específica
+      if (this.idSubcategoriaSeleccionada !== -1) {
+        coincideCategoria = producto.idCategoria === this.idSubcategoriaSeleccionada;
+      } 
+      // Caso B: Solo se seleccionó Categoría Principal
+      else if (this.idCategoriaPadreSeleccionada !== -1) {
+        const catProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
+        
+        const esDirecta = producto.idCategoria === this.idCategoriaPadreSeleccionada;
+        const esHija = catProducto && catProducto.idCategoriaPadre === this.idCategoriaPadreSeleccionada;
+        
+        coincideCategoria = esDirecta || Boolean(esHija);
+      }
+
+      return coincideTexto && coincideCategoria;
+    });
   }
 
-  limpiarCarrito() {
-    this.actualizarEstado([]);
+  getImagenUrl(ruta: string | null): string {
+    if (!ruta) return 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
+    if (ruta.startsWith('http')) return ruta;
+    return `${this.backendUrl}${ruta}`; 
   }
 
-  obtenerTotal(): number {
-    return this.itemsSubject.value.reduce((acc, item) => acc + item.subtotal, 0);
+  // --- LÓGICA DE CARRITO Y SEGURIDAD ---
+
+  agregarAlCarrito(producto: Producto) {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      this.abrirLoginModal();
+      return; 
+    }
+
+    this.carritoService.agregarProducto(producto);
+    alert(`¡${producto.nombre} agregado al carrito!`);
   }
 
-  obtenerCantidadItems(): number {
-    return this.itemsSubject.value.reduce((acc, item) => acc + item.cantidad, 0);
+  abrirLoginModal() {
+    const modalElement = document.getElementById('loginModal');
+    if (modalElement) {
+      this.loginModal = new bootstrap.Modal(modalElement);
+      this.loginModal.show();
+    }
   }
 
-  private actualizarEstado(items: ItemCarrito[]) {
-    this.itemsSubject.next(items);
-    localStorage.setItem('carrito', JSON.stringify(items));
+  irALogin() {
+    if (this.loginModal) {
+      this.loginModal.hide();
+    } else {
+      const modalElement = document.getElementById('loginModal');
+      if (modalElement) {
+        const instance = bootstrap.Modal.getInstance(modalElement);
+        if (instance) instance.hide();
+      }
+    }
+
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('padding-right');
+    document.body.style.removeProperty('overflow');
+
+    this.router.navigate(['/login']);
   }
 }

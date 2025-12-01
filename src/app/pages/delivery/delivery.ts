@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
+// Corrección: Importar desde carrito.service
 import { CarritoService, ItemCarrito } from '../../services/carrito.service';
 
 @Component({
@@ -26,24 +27,20 @@ export class Delivery implements OnInit {
     direccion: '',
     referencia: '',
     telefono: '',
-    metodoPago: 'EFECTIVO' // Valor por defecto
+    metodoPago: 'EFECTIVO' 
   };
 
   cargando = false;
 
   ngOnInit() {
-    // 1. Suscribirse a cambios en el carrito
     this.carritoService.items$.subscribe(data => {
       this.items = data;
       this.total = this.carritoService.obtenerTotal();
     });
 
-    // 2. Precargar datos del usuario si existen (para mejor UX)
-    // Intentamos recuperar los datos que guardamos al hacer login
     const usuarioStr = localStorage.getItem('usuario');
     if (usuarioStr) {
-        // Podríamos tener datos aquí si los hubiéramos guardado al registrarse
-        // Si no, el usuario debe llenarlos manualmente
+        // Lógica de precarga si existiera
     }
   }
 
@@ -52,7 +49,6 @@ export class Delivery implements OnInit {
   }
 
   realizarPedido() {
-    // Validaciones básicas
     if (this.items.length === 0) {
       alert('Tu carrito está vacío. Agrega productos desde el menú.');
       return;
@@ -65,8 +61,6 @@ export class Delivery implements OnInit {
 
     this.cargando = true;
 
-    // Obtener ID del cliente logueado desde localStorage
-    // Recuerda que guardamos esto en el Login.ts como: { id, nombre, rol }
     const usuarioData = JSON.parse(localStorage.getItem('usuario') || '{}');
     const idCliente = usuarioData.id; 
 
@@ -76,33 +70,26 @@ export class Delivery implements OnInit {
       return;
     }
 
-    // Construir el objeto JSON para el backend
-    // Debe coincidir con la clase PedidoWebDTO.java
     const pedidoDTO = {
       idClienteWeb: idCliente,
       direccionEntrega: this.datosEntrega.direccion,
       referencia: this.datosEntrega.referencia,
       telefonoContacto: this.datosEntrega.telefono,
       metodoPago: this.datosEntrega.metodoPago,
-      // Detalles del pedido (Carrito)
       detalles: this.items.map(item => ({
         idProducto: item.producto.idProducto,
         cantidad: item.cantidad,
         observaciones: item.observaciones
-        // NOTA: No enviamos precio ni subtotal aquí por seguridad.
-        // El backend buscará el precio real en la base de datos.
       }))
     };
 
-    // Enviar al Backend
     this.http.post('http://localhost:8080/api/web/pedidos', pedidoDTO)
       .subscribe({
         next: (res: any) => {
           this.cargando = false;
-          // Éxito: Limpiamos y redirigimos
           alert('¡Pedido enviado con éxito! 🚀\nLa cocina ha recibido tu orden y la está preparando.');
           this.carritoService.limpiarCarrito(); 
-          this.router.navigate(['/']); // Volver al inicio
+          this.router.navigate(['/']); 
         },
         error: (err) => {
           console.error('Error al enviar pedido:', err);

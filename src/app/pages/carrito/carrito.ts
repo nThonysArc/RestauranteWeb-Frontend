@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CarritoService, ItemCarrito } from '../../services/carrito.service';
-// CORRECCIÓN: Importamos environment (ruta relativa desde pages/carrito)
 import { environment } from '../../environments/environment/environment';
 
 @Component({
@@ -37,8 +36,8 @@ export class CarritoComponent implements OnInit {
     const usuarioStr = localStorage.getItem('usuario');
     if (usuarioStr) {
       const user = JSON.parse(usuarioStr);
-      // CORRECCIÓN: Usamos environment.apiUrl
-      const url = `${environment.apiUrl}/web/cliente/${user.id}`;
+      // CORRECCIÓN CLAVE: Se añade '/api' al endpoint de cliente
+      const url = `${environment.apiUrl}/api/web/cliente/${user.id}`;
       
       this.http.get(url).subscribe({
         next: (res: any) => this.clienteData = res,
@@ -61,12 +60,14 @@ export class CarritoComponent implements OnInit {
 
   confirmarPedido() {
     if (!this.clienteData) {
+      // Usar lógica de modal o componente visual en lugar de alert() en producción
       alert("Error: No se identificó al cliente. Por favor inicia sesión nuevamente.");
       this.router.navigate(['/login']);
       return;
     }
     
     if (!this.clienteData.direccionPrincipal || !this.clienteData.telefono) {
+      // Usar lógica de modal o componente visual en lugar de alert() en producción
       alert("Faltan datos de envío (Dirección o Teléfono). Por favor agrégalos en tu Perfil.");
       this.router.navigate(['/perfil']);
       return;
@@ -86,12 +87,13 @@ export class CarritoComponent implements OnInit {
       }))
     };
 
-    // CORRECCIÓN: Usamos environment.apiUrl
-    const url = `${environment.apiUrl}/web/pedidos`;
+    // CORRECCIÓN CLAVE: Se añade '/api' al endpoint de pedidos
+    const url = `${environment.apiUrl}/api/web/pedidos`;
 
     this.http.post(url, pedidoDTO).subscribe({
       next: () => {
         this.cargando = false;
+        // Usar lógica de modal o componente visual en lugar de alert() en producción
         alert("¡Pedido enviado con éxito! 🚀\nLa cocina ha recibido tu orden.");
         this.carritoService.limpiarCarrito();
         this.router.navigate(['/menu']);
@@ -99,6 +101,7 @@ export class CarritoComponent implements OnInit {
       error: (err) => {
         console.error(err);
         this.cargando = false;
+        // Usar lógica de modal o componente visual en lugar de alert() en producción
         alert("Hubo un error al procesar tu pedido. Intenta nuevamente.");
       }
     });

@@ -35,8 +35,8 @@ export class Login {
     this.cargando = true;
     this.errorLogin = false;
 
-    // CORRECCIÓN: Usamos la URL del environment
-    const url = `${environment.apiUrl}/web/auth/login`;
+    // CORRECCIÓN: Usamos la URL del environment y AÑADIMOS '/api'
+    const url = `${environment.apiUrl}/api/web/auth/login`;
 
     this.http.post<any>(url, this.credenciales)
       .subscribe({

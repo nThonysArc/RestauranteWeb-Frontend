@@ -30,10 +30,12 @@ export class ProductoService {
   private apiUrl = environment.apiUrl;
 
   obtenerProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.apiUrl}/productos`);
+    // CORRECCIÓN: Se añade '/api'
+    return this.http.get<Producto[]>(`${this.apiUrl}/api/productos`);
   }
 
   obtenerCategorias(): Observable<Categoria[]> {
-    return this.http.get<Categoria[]>(`${this.apiUrl}/categorias`);
+    // CORRECCIÓN: Se añade '/api'
+    return this.http.get<Categoria[]>(`${this.apiUrl}/api/categorias`);
   }
 }

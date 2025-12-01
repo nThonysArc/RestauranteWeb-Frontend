@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+// CORRECCIÓN: Importamos environment
+import { environment } from '../environments/environment/environment';
 
 @Component({
   selector: 'app-login',
@@ -33,15 +35,14 @@ export class Login {
     this.cargando = true;
     this.errorLogin = false;
 
-    // Conectar con tu backend real
-    this.http.post<any>('http://localhost:8080/api/web/auth/login', this.credenciales)
+    // CORRECCIÓN: Usamos la URL del environment
+    const url = `${environment.apiUrl}/web/auth/login`;
+
+    this.http.post<any>(url, this.credenciales)
       .subscribe({
         next: (res) => {
-          // 1. Guardar el token
           localStorage.setItem('token', res.token);
           
-          // 2. ¡CORRECCIÓN IMPORTANTE! Guardar datos del usuario
-          // El backend devuelve: { token, id, nombre, rol }
           const usuarioData = {
             id: res.id,
             nombre: res.nombre,
@@ -49,7 +50,6 @@ export class Login {
           };
           localStorage.setItem('usuario', JSON.stringify(usuarioData));
           
-          // 3. Redirigir al menú
           this.router.navigate(['/menu']);
         },
         error: (err) => {

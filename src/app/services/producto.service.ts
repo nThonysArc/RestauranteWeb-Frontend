@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-// Importamos environment para usar la URL correcta según estemos en local o prod
-import { environment } from 'environments/environment'; 
+// CORRECCIÓN: Usar solo un "../" porque "services" y "environments" son hermanos dentro de "app"
+import { environment } from '../environments/environment/environment'; 
 
-// Interfaz para las categorías
 export interface Categoria {
   idCategoria: number;
   nombre: string;
@@ -12,7 +11,6 @@ export interface Categoria {
   tieneHijos?: boolean; 
 }
 
-// Interfaz para los productos
 export interface Producto {
   idProducto: number;
   nombre: string;
@@ -29,7 +27,6 @@ export interface Producto {
 export class ProductoService {
   private http = inject(HttpClient);
   
-  // CAMBIO: Usamos la variable del environment en lugar de hardcodear localhost
   private apiUrl = environment.apiUrl;
 
   obtenerProductos(): Observable<Producto[]> {

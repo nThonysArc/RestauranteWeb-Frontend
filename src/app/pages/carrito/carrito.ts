@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CarritoService, ItemCarrito } from '../../services/carrito.service';
+// CORRECCIÓN: Importamos environment (ruta relativa desde pages/carrito)
+import { environment } from '../../environments/environment/environment';
 
 @Component({
   selector: 'app-carrito',
@@ -13,13 +15,13 @@ import { CarritoService, ItemCarrito } from '../../services/carrito.service';
   styleUrls: ['./carrito.scss']
 })
 export class CarritoComponent implements OnInit {
-  carritoService = inject(CarritoService); // Público para usar en HTML
+  carritoService = inject(CarritoService); 
   private http = inject(HttpClient);
   private router = inject(Router);
 
   items: ItemCarrito[] = [];
   total: number = 0;
-  clienteData: any = null; // Para mostrar dirección de envío
+  clienteData: any = null; 
   cargando = false;
 
   ngOnInit() {
@@ -35,8 +37,10 @@ export class CarritoComponent implements OnInit {
     const usuarioStr = localStorage.getItem('usuario');
     if (usuarioStr) {
       const user = JSON.parse(usuarioStr);
-      // Obtenemos los datos frescos del backend para asegurar dirección correcta
-      this.http.get(`http://localhost:8080/api/web/cliente/${user.id}`).subscribe({
+      // CORRECCIÓN: Usamos environment.apiUrl
+      const url = `${environment.apiUrl}/web/cliente/${user.id}`;
+      
+      this.http.get(url).subscribe({
         next: (res: any) => this.clienteData = res,
         error: (err) => console.error("Error cargando cliente", err)
       });
@@ -46,10 +50,7 @@ export class CarritoComponent implements OnInit {
   actualizarCantidad(idProducto: number, delta: number) {
     const item = this.items.find(i => i.producto.idProducto === idProducto);
     if (item) {
-      // Si delta es -1 y cantidad es 1, no hacemos nada aquí (el botón eliminar es para eso)
-      // O permitimos bajar a 0 y eliminar? Mejor explícito.
       if (delta === -1 && item.cantidad === 1) return;
-
       this.carritoService.agregarProducto(item.producto, delta); 
     }
   }
@@ -65,7 +66,6 @@ export class CarritoComponent implements OnInit {
       return;
     }
     
-    // Validación estricta de datos de delivery
     if (!this.clienteData.direccionPrincipal || !this.clienteData.telefono) {
       alert("Faltan datos de envío (Dirección o Teléfono). Por favor agrégalos en tu Perfil.");
       this.router.navigate(['/perfil']);
@@ -78,7 +78,7 @@ export class CarritoComponent implements OnInit {
       direccionEntrega: this.clienteData.direccionPrincipal,
       telefonoContacto: this.clienteData.telefono,
       referencia: this.clienteData.referenciaDireccion,
-      metodoPago: 'EFECTIVO', // Podrías poner un select en el HTML para cambiar esto
+      metodoPago: 'EFECTIVO', 
       detalles: this.items.map(i => ({
         idProducto: i.producto.idProducto,
         cantidad: i.cantidad,
@@ -86,7 +86,10 @@ export class CarritoComponent implements OnInit {
       }))
     };
 
-    this.http.post('http://localhost:8080/api/web/pedidos', pedidoDTO).subscribe({
+    // CORRECCIÓN: Usamos environment.apiUrl
+    const url = `${environment.apiUrl}/web/pedidos`;
+
+    this.http.post(url, pedidoDTO).subscribe({
       next: () => {
         this.cargando = false;
         alert("¡Pedido enviado con éxito! 🚀\nLa cocina ha recibido tu orden.");

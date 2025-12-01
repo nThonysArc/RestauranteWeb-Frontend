@@ -1,164 +1,81 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Importante para la navegación
-import { forkJoin } from 'rxjs'; 
-import { ProductoService, Producto, Categoria } from '../../services/producto.service';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Producto } from './producto.service';
 
-// Declaramos la variable bootstrap para que TypeScript la reconozca
-declare var bootstrap: any;
+export interface ItemCarrito {
+  producto: Producto;
+  cantidad: number;
+  observaciones: string;
+  subtotal: number;
+}
 
-@Component({
-  selector: 'app-menu',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './menu.html',
-  styleUrl: './menu.scss'
+@Injectable({
+  providedIn: 'root'
 })
-export class Menu implements OnInit {
-  private productoService = inject(ProductoService);
-  private router = inject(Router); // Inyectamos el Router
-  
-  // Datos crudos
-  todosLosProductos: Producto[] = [];
-  todasLasCategorias: Categoria[] = [];
+export class CarritoService {
+  // BehaviorSubject permite a los componentes suscribirse a los cambios en tiempo real
+  private itemsSubject = new BehaviorSubject<ItemCarrito[]>([]);
+  items$ = this.itemsSubject.asObservable();
 
-  // Listas para los Selects
-  categoriasPrincipales: Categoria[] = [];
-  subcategoriasDisponibles: Categoria[] = [];
-
-  // Datos mostrados
-  productosFiltrados: Producto[] = [];
-
-  // Filtros seleccionados
-  textoBusqueda: string = '';
-  idCategoriaPadreSeleccionada: number = -1;
-  idSubcategoriaSeleccionada: number = -1;
-
-  cargando: boolean = true; 
-  errorCarga: boolean = false;
-  
-  private backendUrl = 'http://localhost:8080';
-  private loginModal: any; // Referencia para controlar el modal
-
-  ngOnInit(): void {
-    this.cargarDatos();
+  constructor() {
+    // Al iniciar, intentamos recuperar el carrito del localStorage para no perder datos si se recarga la página
+    const guardado = localStorage.getItem('carrito');
+    if (guardado) {
+      try {
+        this.itemsSubject.next(JSON.parse(guardado));
+      } catch (e) {
+        console.error('Error al cargar el carrito', e);
+        localStorage.removeItem('carrito');
+      }
+    }
   }
 
-  cargarDatos() {
-    this.cargando = true;
+  agregarProducto(producto: Producto, cantidad: number = 1, observaciones: string = '') {
+    const itemsActuales = this.itemsSubject.value;
     
-    forkJoin({
-      productos: this.productoService.obtenerProductos(),
-      categorias: this.productoService.obtenerCategorias()
-    }).subscribe({
-      next: (res) => {
-        this.todosLosProductos = res.productos;
-        this.todasLasCategorias = res.categorias;
-        
-        // Llenar categorías principales
-        this.categoriasPrincipales = this.todasLasCategorias
-          .filter(c => !c.idCategoriaPadre)
-          .sort((a, b) => a.nombre.localeCompare(b.nombre));
+    // Verificar si el producto ya existe en el carrito
+    const itemExistente = itemsActuales.find(item => item.producto.idProducto === producto.idProducto);
 
-        // Mostrar todo inicialmente
-        this.productosFiltrados = this.todosLosProductos;
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('Error:', err);
-        this.errorCarga = true;
-        this.cargando = false;
+    if (itemExistente) {
+      // Si existe, aumentamos la cantidad
+      itemExistente.cantidad += cantidad;
+      itemExistente.subtotal = itemExistente.cantidad * itemExistente.producto.precio;
+      // Opcional: concatenar observaciones si son diferentes
+      if (observaciones && !itemExistente.observaciones.includes(observaciones)) {
+        itemExistente.observaciones += `, ${observaciones}`;
       }
-    });
-  }
-
-  onCategoriaPadreChange() {
-    this.idSubcategoriaSeleccionada = -1;
-    if (this.idCategoriaPadreSeleccionada !== -1) {
-      this.subcategoriasDisponibles = this.todasLasCategorias
-        .filter(c => c.idCategoriaPadre === this.idCategoriaPadreSeleccionada)
-        .sort((a, b) => a.nombre.localeCompare(b.nombre));
     } else {
-      this.subcategoriasDisponibles = [];
-    }
-    this.aplicarFiltros();
-  }
-
-  aplicarFiltros() {
-    const texto = this.textoBusqueda.toLowerCase();
-    
-    this.productosFiltrados = this.todosLosProductos.filter(producto => {
-      const coincideTexto = producto.nombre.toLowerCase().includes(texto) || 
-                            (producto.descripcion && producto.descripcion.toLowerCase().includes(texto));
-
-      let coincideCategoria = true;
-      if (this.idSubcategoriaSeleccionada !== -1) {
-        coincideCategoria = producto.idCategoria === this.idSubcategoriaSeleccionada;
-      } else if (this.idCategoriaPadreSeleccionada !== -1) {
-        const catProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
-        const esDirecta = producto.idCategoria === this.idCategoriaPadreSeleccionada;
-        const esHija = catProducto && catProducto.idCategoriaPadre === this.idCategoriaPadreSeleccionada;
-        coincideCategoria = esDirecta || Boolean(esHija);
-      }
-      return coincideTexto && coincideCategoria;
-    });
-  }
-
-  getImagenUrl(ruta: string | null): string {
-    if (!ruta) return 'https://via.placeholder.com/300x200?text=Sin+Imagen'; 
-    if (ruta.startsWith('http')) return ruta;
-    return `${this.backendUrl}${ruta}`; 
-  }
-
-  // --- LÓGICA DE SEGURIDAD Y MODAL ---
-
-  agregarAlCarrito(producto: Producto) {
-    // 1. Verificar si el usuario tiene un token guardado (está logueado)
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      // 2. Si NO hay token, abrir el modal de login
-      this.abrirLoginModal();
-      return; 
+      // Si no existe, lo agregamos nuevo
+      itemsActuales.push({
+        producto: producto,
+        cantidad: cantidad,
+        observaciones: observaciones,
+        subtotal: cantidad * producto.precio
+      });
     }
 
-    // 3. Si SÍ hay token, permitir la acción (aquí iría la lógica real del carrito)
-    alert(`¡${producto.nombre} agregado al carrito!`);
+    this.actualizarEstado(itemsActuales);
   }
 
-  // Método auxiliar para abrir el modal usando Bootstrap
-  abrirLoginModal() {
-    const modalElement = document.getElementById('loginModal');
-    if (modalElement) {
-      // Si ya existe una instancia, la usamos; si no, creamos una nueva
-      this.loginModal = new bootstrap.Modal(modalElement);
-      this.loginModal.show();
-    }
+  eliminarProducto(idProducto: number) {
+    const itemsFiltrados = this.itemsSubject.value.filter(item => item.producto.idProducto !== idProducto);
+    this.actualizarEstado(itemsFiltrados);
   }
 
-  // ESTA ES LA FUNCIÓN QUE TE FALTABA Y CAUSABA EL ERROR EN EL HTML
-  irALogin() {
-    // 1. Cerrar el modal si está abierto
-    if (this.loginModal) {
-      this.loginModal.hide();
-    } else {
-      // Intento de cierre de respaldo por si se perdió la referencia
-      const modalElement = document.getElementById('loginModal');
-      if (modalElement) {
-        const instance = bootstrap.Modal.getInstance(modalElement);
-        if (instance) instance.hide();
-      }
-    }
+  limpiarCarrito() {
+    this.actualizarEstado([]);
+  }
 
-    // 2. Limpiar residuos visuales de Bootstrap (el fondo gris oscuro)
-    const backdrops = document.querySelectorAll('.modal-backdrop');
-    backdrops.forEach(backdrop => backdrop.remove());
-    document.body.classList.remove('modal-open');
-    document.body.style.removeProperty('padding-right');
-    document.body.style.removeProperty('overflow');
+  obtenerTotal(): number {
+    return this.itemsSubject.value.reduce((acc, item) => acc + item.subtotal, 0);
+  }
 
-    // 3. Navegar a la pantalla de Login
-    this.router.navigate(['/login']);
+  obtenerCantidadItems(): number {
+    return this.itemsSubject.value.reduce((acc, item) => acc + item.cantidad, 0);
+  }
+
+  private actualizarEstado(items: ItemCarrito[]) {
+    this.itemsSubject.next(items);
+    localStorage.setItem('carrito', JSON.stringify(items));
   }
 }

@@ -21,6 +21,12 @@ export interface Producto {
   categoriaNombre: string;
   idCategoria: number; // Dato clave para el filtrado
 }
+export interface ItemCarrito {
+  producto: Producto;
+  cantidad: number;
+  observaciones: string;
+  subtotal: number;
+}
 
 @Injectable({
   providedIn: 'root'

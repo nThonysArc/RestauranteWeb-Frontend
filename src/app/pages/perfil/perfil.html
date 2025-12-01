@@ -1,0 +1,42 @@
+<section class="py-5" style="background-color: #fff7ee; min-height: 100vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0 rounded-4 p-4">
+          <h2 class="text-center mb-4" style="font-family: 'Playfair Display', serif; color: #d67a0a;">Mi Perfil</h2>
+          
+          <div *ngIf="cargando" class="text-center py-5">
+             <div class="spinner-border text-warning"></div>
+          </div>
+
+          <form *ngIf="!cargando" (ngSubmit)="guardarCambios()">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nombre</label>
+              <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Apellidos</label>
+              <input type="text" class="form-control" [(ngModel)]="cliente.apellidos" name="apellidos">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Teléfono / Celular</label>
+              <input type="text" class="form-control" [(ngModel)]="cliente.telefono" name="telefono" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Dirección de Entrega</label>
+              <input type="text" class="form-control" [(ngModel)]="cliente.direccionPrincipal" name="direccion" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Referencia</label>
+              <textarea class="form-control" rows="2" [(ngModel)]="cliente.referenciaDireccion" name="referencia"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-naranja w-100 mt-3" [disabled]="guardando">
+              {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

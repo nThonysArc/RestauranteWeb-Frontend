@@ -1,0 +1,13 @@
+.text-naranja {
+  color: #f38b0b;
+}
+.btn-naranja {
+  background-color: #f38b0b;
+  color: white;
+  border: none;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ffa94d;
+    color: white;
+  }
+}

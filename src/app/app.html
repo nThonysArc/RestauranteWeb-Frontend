@@ -1,3 +1,4 @@
+<!-- Header -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #020101;">
   <div class="container">
     <a class="navbar-brand text-white fs-3" href="#">Raíz Iqueña</a>
@@ -9,6 +10,7 @@
     
     <div class="collapse navbar-collapse" id="navbarNav">
       
+      <!-- Menú Central (mx-auto para centrar) -->
       <ul class="navbar-nav mx-auto text-center">
         <li class="nav-item">
           <a class="nav-link text-white fs-5" routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
@@ -19,16 +21,25 @@
         <li class="nav-item">
           <a class="nav-link text-white fs-5" routerLink="sobre-nosotros" routerLinkActive="active">Sobre Nosotros</a>
         </li>
-        </ul>
+        <!-- Nuevo Link al Carrito en el Menú Principal -->
+        <li class="nav-item">
+           <a class="nav-link text-white fs-5" routerLink="carrito" routerLinkActive="active">
+             <i class="bi bi-cart-fill"></i> Carrito
+           </a>
+        </li>
+      </ul>
 
+      <!-- Zona de Usuario (Derecha) -->
       <ul class="navbar-nav ms-auto text-center">
         
+        <!-- Caso: Usuario NO Logueado -->
         <li class="nav-item" *ngIf="!usuarioLogueado">
           <a class="btn btn-outline-light px-4 rounded-pill mt-2 mt-lg-0" routerLink="login">
             <i class="bi bi-person-fill me-1"></i> Iniciar Sesión
           </a>
         </li>
 
+        <!-- Caso: Usuario Logueado (Dropdown) -->
         <li class="nav-item dropdown" *ngIf="usuarioLogueado">
           <a class="nav-link dropdown-toggle text-white d-flex align-items-center justify-content-center gap-2" 
              href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -44,6 +55,10 @@
                 <strong>{{ usuarioLogueado.nombre }}</strong>
               </div>
             </li>
+            <li><hr class="dropdown-divider"></li>
+            <!-- Nuevas opciones de perfil y carrito -->
+            <li><a class="dropdown-item py-2" routerLink="perfil"><i class="bi bi-person-badge me-2"></i> Mi Perfil</a></li>
+            <li><a class="dropdown-item py-2" routerLink="carrito"><i class="bi bi-cart3 me-2"></i> Ver mi Carrito</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <button class="dropdown-item text-danger py-2 fw-bold" (click)="logout()">
@@ -65,7 +80,59 @@
 
 <footer class="text-white pt-5 pb-4" style="background-color: #6b310f;">
   <div class="container">
-     <div class="text-center mt-4">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h2 style="font-family: 'Clicker Script', cursive; font-size: 2.5rem;">Raíz Iqueña</h2>
+        <p style="margin-top: 15px; font-size: 1rem; line-height: 1.5;">
+          Nos enorgullece compartir la auténtica comida iqueña y el calor del criollismo, manteniendo vivas las recetas heredadas de generación en generación. Ven y disfruta de una experiencia que combina historia y sabor.
+        </p>
+
+        <!-- redes sociales dentro de la misma columna -->
+        <div class="mt-3 d-flex gap-3">
+          <a href="https://www.facebook.com/tu_pagina" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="text-white fs-4">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="https://www.instagram.com/tu_pagina" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-white fs-4">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="https://wa.me/51987654321" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="text-white fs-4">
+            <i class="bi bi-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h5 class="fw-bold mb-3">—</h5>
+        <ul class="list-unstyled">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h5 class="fw-bold mb-3">Acerca de</h5>
+        <ul class="list-unstyled">
+          <li>Historia</li>
+          <li>Misión</li>
+          <li>Visión</li>
+          <li>Valores</li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3">Contáctanos</h5>
+        <ul class="list-unstyled">
+          <li>Ubicación: Prol. Fermín Tanguis 250, Urb. San Miguel, Ica</li>
+          <li>Teléfono: +51 956 336 780</li>
+          <li>Email: restauranteraizica@gmail.com</li>
+          <li>Sitio web: https://restauranteraizica.up.railway.app/</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
       © 2025 Raíz Iqueña - Todos los derechos reservados
     </div>
   </div>

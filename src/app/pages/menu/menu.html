@@ -46,8 +46,9 @@
             <p class="descripcion">{{ producto.descripcion }}</p>
             <div class="footer-card">
               <span class="precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
-              <button class="btn-agregar" (click)="iniciarPedido(producto)">
-                Pedir Ahora
+              <!-- CAMBIO: Botón simplificado -->
+              <button class="btn-agregar" (click)="agregarAlCarrito(producto)">
+                <i class="bi bi-cart-plus me-2"></i> Agregar
               </button>
             </div>
         </div>
@@ -59,52 +60,21 @@
   </div>
 </section>
 
+<!-- ================= MODAL LOGIN REQUERIDO ================= -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border-radius: 15px; border: none;">
-      <div class="modal-header bg-warning text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
-        <h5 class="modal-title fw-bold"><i class="bi bi-lock-fill"></i> Acceso Requerido</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header" style="background-color: #f38b0b; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <h5 class="modal-title fw-bold"><i class="bi bi-lock-fill me-2"></i> Identifícate</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center py-4">
-        <h5>¡Hola!</h5>
-        <p class="text-muted">Para realizar un pedido necesitas una cuenta.</p>
-        <div class="d-grid gap-2 col-8 mx-auto mt-4">
+        <h5 class="mb-3">¡Para pedir necesitas una cuenta!</h5>
+        <p class="text-muted mb-4">Inicia sesión o regístrate para disfrutar de nuestro delivery.</p>
+        <div class="d-grid gap-2 col-8 mx-auto">
             <button class="btn btn-naranja" (click)="irALogin()">Iniciar Sesión</button>
-            <button class="btn btn-outline-secondary" (click)="irARegistro()">Registrarme</button>
+            <button class="btn btn-outline-dark" (click)="irARegistro()">Registrarme</button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="confirmacionModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirmar Pedido</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" *ngIf="productoSeleccionado">
-        <h4 class="text-naranja mb-3">{{ productoSeleccionado.nombre }}</h4>
-        <div class="mb-3">
-            <label class="form-label">Cantidad:</label>
-            <input type="number" class="form-control" [(ngModel)]="cantidadSeleccionada" min="1" max="10">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Notas / Observaciones:</label>
-            <textarea class="form-control" [(ngModel)]="observaciones" placeholder="Ej: Sin picante, poco arroz..." rows="2"></textarea>
-        </div>
-        <div class="alert alert-info">
-            <small><i class="bi bi-info-circle"></i> Se enviará a la dirección registrada en tu cuenta.</small>
-        </div>
-        <h5 class="text-end mt-3">Total: S/ {{ (productoSeleccionado.precio * cantidadSeleccionada) | number:'1.2-2' }}</h5>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-naranja fw-bold" (click)="confirmarPedido()">
-            <i class="bi bi-send"></i> Enviar Pedido
-        </button>
       </div>
     </div>
   </div>

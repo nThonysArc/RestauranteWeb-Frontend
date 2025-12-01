@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router'; 
 import { forkJoin } from 'rxjs'; 
 import { ProductoService, Producto, Categoria } from '../../services/producto.service';
-// Corrección: Importar desde el archivo renombrado correctamente
 import { CarritoService } from '../../services/carrito.service'; 
 
 // Declaramos la variable bootstrap globalmente
@@ -94,24 +93,18 @@ export class Menu implements OnInit {
     const texto = this.textoBusqueda.toLowerCase();
     
     this.productosFiltrados = this.todosLosProductos.filter(producto => {
-      // --- FILTRO DE TEXTO ---
       const coincideTexto = producto.nombre.toLowerCase().includes(texto) || 
                             (producto.descripcion && producto.descripcion.toLowerCase().includes(texto));
 
-      // --- FILTRO DE CATEGORÍA ---
       let coincideCategoria = true;
 
-      // Caso A: Se seleccionó una Subcategoría específica
       if (this.idSubcategoriaSeleccionada !== -1) {
         coincideCategoria = producto.idCategoria === this.idSubcategoriaSeleccionada;
       } 
-      // Caso B: Solo se seleccionó Categoría Principal
       else if (this.idCategoriaPadreSeleccionada !== -1) {
         const catProducto = this.todasLasCategorias.find(c => c.idCategoria === producto.idCategoria);
-        
         const esDirecta = producto.idCategoria === this.idCategoriaPadreSeleccionada;
         const esHija = catProducto && catProducto.idCategoriaPadre === this.idCategoriaPadreSeleccionada;
-        
         coincideCategoria = esDirecta || Boolean(esHija);
       }
 
@@ -124,8 +117,6 @@ export class Menu implements OnInit {
     if (ruta.startsWith('http')) return ruta;
     return `${this.backendUrl}${ruta}`; 
   }
-
-  // --- LÓGICA DE CARRITO Y SEGURIDAD ---
 
   agregarAlCarrito(producto: Producto) {
     const token = localStorage.getItem('token');
@@ -147,7 +138,8 @@ export class Menu implements OnInit {
     }
   }
 
-  irALogin() {
+  // Método auxiliar para cerrar modal y limpiar backdrop
+  private cerrarModalYNavegar(ruta: string) {
     if (this.loginModal) {
       this.loginModal.hide();
     } else {
@@ -164,6 +156,14 @@ export class Menu implements OnInit {
     document.body.style.removeProperty('padding-right');
     document.body.style.removeProperty('overflow');
 
-    this.router.navigate(['/login']);
+    this.router.navigate([ruta]);
+  }
+
+  irALogin() {
+    this.cerrarModalYNavegar('/login');
+  }
+
+  irARegistro() {
+    this.cerrarModalYNavegar('/registro');
   }
 }

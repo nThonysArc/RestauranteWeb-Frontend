@@ -37,10 +37,19 @@ export class Login {
     this.http.post<any>('http://localhost:8080/api/web/auth/login', this.credenciales)
       .subscribe({
         next: (res) => {
-          // Guardar el token en el almacenamiento local
+          // 1. Guardar el token
           localStorage.setItem('token', res.token);
           
-          // Redirigir al menú
+          // 2. ¡CORRECCIÓN IMPORTANTE! Guardar datos del usuario
+          // El backend devuelve: { token, id, nombre, rol }
+          const usuarioData = {
+            id: res.id,
+            nombre: res.nombre,
+            rol: res.rol
+          };
+          localStorage.setItem('usuario', JSON.stringify(usuarioData));
+          
+          // 3. Redirigir al menú
           this.router.navigate(['/menu']);
         },
         error: (err) => {

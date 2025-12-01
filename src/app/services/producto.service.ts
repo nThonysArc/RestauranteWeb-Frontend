@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+// Importamos environment para usar la URL correcta según estemos en local o prod
+import { environment } from 'environments/environment'; 
 
 // Interfaz para las categorías
 export interface Categoria {
@@ -21,15 +23,14 @@ export interface Producto {
   idCategoria: number; 
 }
 
-// ELIMINADO: export interface ItemCarrito... (Ya está en carrito.service.ts)
-
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
   private http = inject(HttpClient);
   
-  private apiUrl = 'http://localhost:8080/api'; 
+  // CAMBIO: Usamos la variable del environment en lugar de hardcodear localhost
+  private apiUrl = environment.apiUrl;
 
   obtenerProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(`${this.apiUrl}/productos`);
